@@ -92,15 +92,46 @@ input,select{width:100%;font:inherit;font-size:20px;color:var(--ink);background:
 #bump.go{animation:bump 1.4s ease-out}
 @keyframes bump{0%{opacity:0;transform:translate(-50%,20px) scale(.6)}20%{opacity:1;transform:translate(-50%,0) scale(1.1)}100%{opacity:0;transform:translate(-50%,-80px) scale(1)}}
 .adult{color:#ff6b6b;font-weight:700}
+/* map */
+#map{position:fixed;left:0;right:0;top:var(--hh,70px);bottom:var(--nh,80px);touch-action:none;overflow:hidden;background:radial-gradient(circle at 50% 45%,#16163a,#07070f 70%);user-select:none;-webkit-user-select:none}
+#map svg{display:block}
+#map text{text-anchor:middle;font-weight:800;paint-order:stroke;stroke:#07070f;stroke-linejoin:round;fill:#fff;pointer-events:none}
+#map [data-n]{cursor:pointer}
+.rt1{font-size:190px;stroke-width:0}.rt2{font-size:96px;fill:#ffd23f!important;stroke-width:10px}
+.ht{font-size:150px;stroke-width:14px}.hp{font-size:60px;fill:#d4d4ee!important;stroke-width:8px}
+.vt{font-size:52px;stroke-width:8px}.vp{font-size:24px;fill:#d4d4ee!important;stroke-width:4px}
+.lab.lv{display:none}
+.lf{font-size:30px;stroke-width:0;display:none}.lq{font-size:15px;stroke-width:0;display:none}
+.ln{font-size:18px;stroke-width:4px;fill:#d4d4ee!important;display:none}.lw{font-size:15px;stroke-width:4px;fill:#ffd23f!important;display:none}
+.lk .lf{opacity:.45}
+#map.z1 .lab.lv{display:inline}
+#map.z2 .lf,#map.z2 .lq{display:inline}
+#map.z3 .ln{display:inline}
+#map.z4 .lw{display:inline}
+#map:not(.z2) .nleaf circle,#map:not(.z2) .nadd circle{stroke-width:12}
+#mbar{position:fixed;left:10px;right:10px;bottom:calc(var(--nh,80px) + 10px);display:flex;gap:8px;z-index:4}
+#mbar .ib{flex:1;font-size:17px;min-height:52px;padding:6px 8px;box-shadow:0 3px 10px rgba(0,0,0,.5)}
+#mbar .ib:disabled{opacity:.4}
+#mhint{position:fixed;left:0;right:0;top:calc(var(--hh,70px) + 8px);text-align:center;color:#d4d4ee;font-size:15px;pointer-events:none;z-index:3;text-shadow:0 1px 4px #000}
+body.onmap main{padding:0}
+body.onmap #toast{bottom:calc(var(--nh,80px) + 76px)}
+#cd .cdtop{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:800}
+#cdFlag{font-size:44px}
+#cdWord{font-size:48px;font-weight:900;text-align:center;margin:14px 0 4px;word-break:break-word;color:#ffd23f}
+#cdRo{text-align:center;font-size:22px;font-style:italic;color:#d4d4ee}
+.cdmean{text-align:center;font-size:20px;color:#d4d4ee;margin:10px 0}.cdmean b{color:#fff}
+#cd .wide{margin-top:8px}
+.hrow{display:grid;grid-template-columns:90px 1fr 70px;gap:10px;align-items:center;margin:8px 0;font-size:18px}.hrow .bar{margin:0}.hrow span{text-align:right;color:#d4d4ee}
+optgroup{font-weight:800}
 </style>
 </head>
 <body>
 <header><h1><span>Swear Jar</span> 🫙</h1><div id="hdrPts">0 pts</div><button class="ib" id="setBtn">⚙️ Settings</button></header>
 <main>
-<section id="tab-words">
-  <button class="ib pri wide" id="addBtn">➕ Add a word</button>
-  <div class="chips" id="fchips"></div>
-  <div class="grid" id="wgrid"></div>
+<section id="tab-map">
+  <div id="map"><svg width="100%" height="100%"><g id="world"></g></svg></div>
+  <div id="mbar"><button class="ib" id="mBack">⬅ Back</button><button class="ib" id="mHome">🫙 Whole map</button><button class="ib pri" id="mAdd">➕ Add a word</button></div>
+  <div id="mhint">Tap a bubble to zoom in · pinch or drag to explore</div>
 </section>
 <section id="tab-swap" hidden>
   <div class="note">Sit with a friend who speaks another language. Take turns teaching each other rude words. You both score.</div>
@@ -118,7 +149,7 @@ input,select{width:100%;font:inherit;font-size:20px;color:var(--ink);background:
 <section id="tab-score" hidden><div id="scBody"></div></section>
 </main>
 <nav>
-  <button data-tab="words"><i>📒</i>My words</button>
+  <button data-tab="map"><i>🫙</i>Map</button>
   <button data-tab="swap"><i>🤝</i>Swap</button>
   <button data-tab="quiz"><i>❓</i>Quiz</button>
   <button data-tab="score"><i>🏆</i>Score</button>
@@ -129,9 +160,10 @@ input,select{width:100%;font:inherit;font-size:20px;color:var(--ink);background:
   <p class="note" id="edHint" hidden></p>
   <label for="edWord">The word or phrase</label>
   <div class="inrow"><input id="edWord" autocomplete="off" autocapitalize="off"><button class="ib" id="edSpeak" type="button">🔊 Hear</button></div>
+  <label for="edBranch">Where it goes on the map</label><select id="edBranch"></select>
   <div id="edLangRow"><label for="edLang">Language</label><select id="edLang"></select></div>
   <label id="edLangFixed" hidden></label>
-  <label for="edMean">What it means (English)</label>
+  <label for="edMean" id="edMeanLbl">What it means (English)</label>
   <div class="inrow"><input id="edMean" autocomplete="off"><button class="ib" id="edTr" type="button">🌐 Translate</button></div>
   <label>How rude? <span id="edRudeTxt"></span></label><div id="edRude"></div>
   <label>Type</label><div class="chips" id="edKind" style="margin:0"></div>
@@ -139,6 +171,18 @@ input,select{width:100%;font:inherit;font-size:20px;color:var(--ink);background:
   <div class="inrow"><button class="ib" id="edRec" type="button" style="flex:1">🎙️ <span>Record how it sounds</span></button><button class="ib" id="edPlayRec" type="button" hidden>▶️ Play</button></div></div>
   <label for="edNote">When to use it (optional)</label><input id="edNote" autocomplete="off" placeholder="e.g. only with close friends">
   <div class="act"><button class="ib warn" id="edDel" type="button" hidden>🗑️ Delete</button><button class="ib" id="edCancel" type="button">Cancel</button><button class="ib pri" id="edSave" type="button">✓ Save</button></div>
+</dialog>
+
+<dialog id="cd">
+  <div class="cdtop"><span id="cdFlag"></span><span id="cdLang"></span></div>
+  <div id="cdWord"></div><div id="cdRo"></div>
+  <p class="cdmean">means <b id="cdMean"></b></p>
+  <p class="note" id="cdFrom" hidden></p>
+  <button class="ib pri wide" id="cdLearn">🔓 Learn it  +10</button>
+  <button class="ib wide" id="cdPlay">🔊 Play</button>
+  <button class="ib wide" id="cdEdit">✏️ Edit</button>
+  <button class="ib wide" id="cdNext"></button>
+  <button class="ib wide" id="cdClose">Close</button>
 </dialog>
 
 <dialog id="ty">
@@ -158,7 +202,7 @@ input,select{width:100%;font:inherit;font-size:20px;color:var(--ink);background:
 
 <dialog id="st">
   <h2 id="stTitle">Settings</h2>
-  <div id="stIntro"><p class="note">Collect slang, swear words and insults from every language. Swap them with friends and score points.</p><p class="adult">Contains rude words. For adults.</p></div>
+  <div id="stIntro"><p class="note">Start with six basics, then unlock how people say them around the world. Add your own words, swap with friends and score points.</p><p class="adult">Contains rude words. For adults.</p></div>
   <label for="stName">Your name (shown to friends you swap with)</label><input id="stName" autocomplete="off">
   <label for="stLang">Your language</label><select id="stLang"></select>
   <label class="sw"><input type="checkbox" id="stShare"><span class="trk"></span>Share my words to improve Speakeasy</label>

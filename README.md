@@ -1,6 +1,6 @@
 # Swear Jar
 
-Collect slang, swear words and insults from every language. Swap them face to face with a friend, quiz yourself, and score points.
+A zoomable mind map of swear words. Six basics in the middle (fuck, shit, piss, bitch, bastard, idiot), equivalents in other languages to unlock, and new words, branches and languages added as people play and swap with friends.
 
 Live: https://asiansidekick.github.io/swearjar/
 
