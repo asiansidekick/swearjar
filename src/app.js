@@ -14,7 +14,8 @@ const LANGS=[
 {c:"zt",n:"Chinese (Taiwan)",s:"Taiwan",f:"🇹🇼",tts:"zh-TW",mm:"zh-TW"},{c:"my",n:"Burmese",f:"🇲🇲",tts:"my-MM",mm:"my"},{c:"ta",n:"Tamil",f:"🇮🇳",tts:"ta-IN",mm:"ta"},{c:"bn",n:"Bengali",f:"🇧🇩",tts:"bn-BD",mm:"bn"},{c:"ur",n:"Urdu",f:"🇵🇰",tts:"ur-PK",mm:"ur"},{c:"fa",n:"Persian",f:"🇮🇷",tts:"fa-IR",mm:"fa"},{c:"tr",n:"Turkish",f:"🇹🇷",tts:"tr-TR",mm:"tr"},{c:"pl",n:"Polish",f:"🇵🇱",tts:"pl-PL",mm:"pl"},{c:"nl",n:"Dutch",f:"🇳🇱",tts:"nl-NL",mm:"nl"},{c:"sv",n:"Swedish",f:"🇸🇪",tts:"sv-SE",mm:"sv"},{c:"el",n:"Greek",f:"🇬🇷",tts:"el-GR",mm:"el"},{c:"he",n:"Hebrew",f:"🇮🇱",tts:"he-IL",mm:"he"},{c:"uk",n:"Ukrainian",f:"🇺🇦",tts:"uk-UA",mm:"uk"},{c:"ne",n:"Nepali",f:"🇳🇵",tts:"ne-NP",mm:"ne"},{c:"si",n:"Sinhala",f:"🇱🇰",tts:"si-LK",mm:"si"},{c:"mn",n:"Mongolian",f:"🇲🇳",tts:"mn-MN",mm:"mn"},{c:"kk",n:"Kazakh",f:"🇰🇿",tts:"kk-KZ",mm:"kk"},{c:"sw",n:"Swahili",f:"🇰🇪",tts:"sw-KE",mm:"sw"},{c:"cs",n:"Czech",f:"🇨🇿",tts:"cs-CZ",mm:"cs"},{c:"ro",n:"Romanian",f:"🇷🇴",tts:"ro-RO",mm:"ro"},{c:"hu",n:"Hungarian",f:"🇭🇺",tts:"hu-HU",mm:"hu"},
 {c:"yue",n:"Cantonese",f:"🇭🇰",tts:"zh-HK",mm:"yue"},{c:"ceb",n:"Cebuano",f:"🇵🇭",tts:"ceb-PH",mm:"ceb"},{c:"jv",n:"Javanese",f:"🇮🇩",tts:"jv-ID",mm:"jw"},{c:"pa",n:"Punjabi",f:"🇮🇳",tts:"pa-IN",mm:"pa"},{c:"mr",n:"Marathi",f:"🇮🇳",tts:"mr-IN",mm:"mr"},{c:"te",n:"Telugu",f:"🇮🇳",tts:"te-IN",mm:"te"}];
 const LG=c=>LANGS.find(l=>l.c===c)||LANGS[0];
-const SN=c=>LG(c).s||LG(c).n;
+const LN=c=>S&&S.me.lang==="th"&&LN_TH[c]||LG(c).n;
+const SN=c=>S&&S.me.lang==="th"&&(LN_TH_SHORT[c]||LN_TH[c])||LG(c).s||LG(c).n;
 const KINDS=[{k:"swear",n:"Swear word",c:"#ff6b6b"},{k:"insult",n:"Insult",c:"#ff9f1c"},{k:"slang",n:"Slang",c:"#4cc9f0"},{k:"funny",n:"Funny",c:"#7bd88f"}];
 const HUBC={fuck:"#ff6b6b",shit:"#ff9f1c",piss:"#ffd23f",bitch:"#ff6b9d",bastard:"#4cc9f0",idiot:"#7bd88f",other:"#b388ff"};
 const PTS={add:10,newlang:10,learn:10,friend:20,teach:20,nailed:10,quiz:5,branch:15};
@@ -42,7 +43,7 @@ async function audDel(id){try{const d=await db();d.transaction("aud","readwrite"
 
 /* ---------- toast / points ---------- */
 let toastT;
-function toast(msg,bad){const t=$("toast");t.textContent=msg;t.className="show"+(bad?" bad":"");clearTimeout(toastT);toastT=setTimeout(()=>{t.className=""},2600)}
+function toast(msg,bad){msg=T(msg);const t=$("toast");t.textContent=msg;t.className="show"+(bad?" bad":"");clearTimeout(toastT);toastT=setTimeout(()=>{t.className=""},2600)}
 function addPts(n,why){S.pts+=n;const d=new Date().toISOString().slice(0,10);if(!S.days.includes(d)){S.days.push(d);if(S.days.length>400)S.days.shift()}
   save();bump(n,why);checkBadges();paintScore()}
 function bump(n,why){const b=$("bump");b.textContent="+"+n+" "+why;b.className="";void b.offsetWidth;b.className="go"}
@@ -54,12 +55,20 @@ function allVars(){const v=[];SEED.forEach(h=>h.vars.forEach(x=>v.push({id:x.id,
   return v.concat(S.vars.map(x=>({id:x.id,hub:x.hub,en:x.en,w:{}})),S.words.some(w=>w.var==="misc")?[{id:"misc",hub:"other",en:"My extras",w:{}}]:[])}
 const varById=id=>allVars().find(v=>v.id===id);
 const hubById=id=>allHubs().find(h=>h.id===id);
+/* names on the map in the player's own language, English when there's nothing better */
+const clean=t=>String(t).replace(/^[¡¿\s]+|[!?！？。.\s]+$/g,"");
+function hubLabel(h){const m=S.me.lang;if(!m||m==="en")return T(h.en);
+  if(HUBN[m]&&HUBN[m][h.id])return HUBN[m][h.id];
+  const v=allVars().find(v=>v.hub===h.id&&v.w[m]);return v?clean(split(v.w[m])[0]):T(h.en)}
+function varLabel(v){const m=S.me.lang;return m&&m!=="en"&&v.w[m]?split(v.w[m])[0]:T(v.en)}
+function soundsLike(vid,lang,ro){if(ro)return ro;if(RO[lang]&&RO[lang][vid])return RO[lang][vid];
+  const m=S.me.lang;if(lang==="en"&&EN_SOUND[m]&&EN_SOUND[m][vid])return EN_SOUND[m][vid];return""}
 function split(t){const i=String(t).indexOf("|");return i<0?[t,""]:[t.slice(0,i),t.slice(i+1)]}
 const isLearned=(vid,lang)=>lang===S.me.lang||!!S.learned[vid+"|"+lang];
 /* every word on a branch: built-in ones (locked until learned) and ones added by me or friends */
 function leavesOf(v){const out=[];
-  for(const l in v.w){const[w,ro]=split(v.w[l]);out.push({t:"leaf",key:v.id+"|"+l,var:v.id,lang:l,w,ro,seed:true,learned:isLearned(v.id,l)})}
-  S.words.filter(x=>x.var===v.id).forEach(x=>out.push({t:"leaf",key:"u:"+x.id,var:v.id,lang:x.lang,w:x.w,ro:x.ro||"",uid:x.id,by:x.by,from:x.from,learned:true}));
+  for(const l in v.w){const[w,ro]=split(v.w[l]);out.push({t:"leaf",key:v.id+"|"+l,var:v.id,lang:l,w,ro:soundsLike(v.id,l,ro),seed:true,learned:isLearned(v.id,l)})}
+  S.words.filter(x=>x.var===v.id).forEach(x=>out.push({t:"leaf",key:"u:"+x.id,var:v.id,lang:x.lang,w:x.w,ro:soundsLike(v.id,x.lang,x.ro||""),uid:x.id,by:x.by,from:x.from,learned:true}));
   const order=l=>l===S.me.lang?0:l==="en"?1:2;
   out.sort((a,b)=>order(a.lang)-order(b.lang)||SN(a.lang).localeCompare(SN(b.lang)));
   return out}
@@ -71,8 +80,8 @@ let TREE=null,NODES={};
 function build(){
   NODES={};
   const root={t:"root",id:"root",kids:[]};
-  allHubs().forEach(h=>{const hn={t:"hub",id:"h:"+h.id,hub:h.id,en:h.en,c:HUBC[h.id]||"#b388ff",kids:[]};
-    allVars().filter(v=>v.hub===h.id).forEach(v=>{const vn={t:"var",id:"v:"+v.id,var:v.id,en:v.en,c:hn.c,kids:leavesOf(v)};
+  allHubs().forEach(h=>{const hn={t:"hub",id:"h:"+h.id,hub:h.id,en:hubLabel(h),c:HUBC[h.id]||"#b388ff",kids:[]};
+    allVars().filter(v=>v.hub===h.id).forEach(v=>{const vn={t:"var",id:"v:"+v.id,var:v.id,en:varLabel(v),c:hn.c,kids:leavesOf(v)};
       vn.kids.forEach(l=>{l.id="l:"+l.key;l.c=hn.c});
       vn.kids.push({t:"add",id:"a:"+v.id,var:v.id,c:hn.c});
       hn.kids.push(vn)});
@@ -111,14 +120,14 @@ function draw(){
   r.kids.forEach(h=>{edge(r,h,16,h.c);h.kids.forEach(v=>{edge(h,v,7,v.c);v.kids.forEach(l=>edge(v,l,2.5,l.c))})});
   // leaves first so bigger nodes sit on top
   r.kids.forEach(h=>h.kids.forEach(v=>v.kids.forEach(l=>{
-    if(l.t==="add"){N.push(`<g data-n="${l.id}" class="nadd"><circle cx="${l.x.toFixed(1)}" cy="${l.y.toFixed(1)}" r="${LEAF_R}" fill="#07070f" stroke="${l.c}" stroke-width="3" stroke-dasharray="6 5"/>${txt(l.x,l.y+13,"＋","lf")}${txt(l.x,l.y+LEAF_R+20,"Add a word","ln")}</g>`);return}
+    if(l.t==="add"){N.push(`<g data-n="${l.id}" class="nadd"><circle cx="${l.x.toFixed(1)}" cy="${l.y.toFixed(1)}" r="${LEAF_R}" fill="#07070f" stroke="${l.c}" stroke-width="3" stroke-dasharray="6 5"/>${txt(l.x,l.y+13,"＋","lf")}${txt(l.x,l.y+LEAF_R+20,T("Add a word"),"ln")}</g>`);return}
     const lk=!l.learned;
     N.push(`<g data-n="${l.id}" class="nleaf${lk?" lk":""}"><circle cx="${l.x.toFixed(1)}" cy="${l.y.toFixed(1)}" r="${LEAF_R}" fill="${lk?"#101024":"#1f1f3d"}" stroke="${lk?"#5a5a99":l.c}" stroke-width="${lk?2.5:4}" ${lk?'stroke-dasharray="7 5"':""}/>`+
       txt(l.x,l.y+11,LG(l.lang).f,"lf")+(lk?txt(l.x+22,l.y-17,"🔒","lq"):"")+txt(l.x,l.y+LEAF_R+20,SN(l.lang),"ln")+
       (lk?"":txt(l.x,l.y+LEAF_R+38,l.w.length>13?l.w.slice(0,12)+"…":l.w,"lw"))+`</g>`)})));
   r.kids.forEach(h=>h.kids.forEach(v=>{const[g,a]=progress(v);const w=v.pw;
     N.push(`<g data-n="${v.id}" class="nvar">`+lab(v,"lv",`<rect x="${-w/2}" y="-50" width="${w}" height="100" rx="50" fill="#16162a" stroke="${v.c}" stroke-width="8"/>`+
-      txt(0,2,v.en,"vt")+txt(0,36,g+" of "+a+" learned","vp"))+`</g>`)}));
+      txt(0,2,v.en,"vt")+txt(0,36,T("{0} of {1} learned",g,a),"vp"))+`</g>`)}));
   r.kids.forEach(h=>{const[g,a]=progress(h);
     N.push(`<g data-n="${h.id}" class="nhub"><circle cx="${h.x.toFixed(1)}" cy="${h.y.toFixed(1)}" r="${HUB_R}" fill="#16162a" stroke="${h.c}" stroke-width="22"/>`+
       lab(h,"lh",txt(0,40,h.en,"ht",`fill="${h.c}"`)+txt(0,120,g+" / "+a,"hp"))+`</g>`)});
@@ -176,17 +185,37 @@ function wireMap(){
 /* ---------- leaf card ---------- */
 let CARD=null;
 function openLeaf(l){CARD=l;const v=varById(l.var);
-  $("cdFlag").textContent=LG(l.lang).f;$("cdLang").textContent=LG(l.lang).n;$("cdMean").textContent=v?v.en:"";
+  $("cdFlag").textContent=LG(l.lang).f;$("cdLang").textContent=LN(l.lang);$("cdMean").textContent=v?varLabel(v):"";$("cdHeard").textContent="";
   paintCard();$("cd").showModal()}
 function paintCard(){const l=CARD;
-  $("cdWord").textContent=l.learned?l.w:"🔒";$("cdRo").textContent=l.learned?l.ro:"";$("cdRo").hidden=!l.learned||!l.ro;
-  $("cdFrom").textContent=l.uid?(l.by==="friend"&&l.from?"Taught by "+l.from:"Added by you"):"";$("cdFrom").hidden=!l.uid;
-  $("cdLearn").hidden=l.learned;$("cdPlay").hidden=!l.learned;$("cdEdit").hidden=!l.uid;
-  const next=nextLocked(l);$("cdNext").hidden=!next;$("cdNext").textContent=next?"Next: "+LG(next.lang).f+" "+SN(next.lang)+" ➜":""}
+  $("cdWord").textContent=l.learned?l.w:"🔒";$("cdRoT").textContent=l.learned?l.ro:"";$("cdRo").hidden=!l.learned||!l.ro;
+  $("cdFrom").textContent=l.uid?(l.by==="friend"&&l.from?T("Taught by {0}",l.from):T("Added by you")):"";$("cdFrom").hidden=!l.uid;
+  $("cdLearn").hidden=l.learned;$("cdPractice").hidden=!l.learned;$("cdHeard").textContent="";$("cdEdit").hidden=!l.uid;
+  const next=nextLocked(l);$("cdNext").hidden=!next;$("cdNext").textContent=next?T("Next: {0} ➜",LG(next.lang).f+" "+SN(next.lang)):""}
 function nextLocked(l){const v=NODES["v:"+l.var];if(!v)return null;const k=v.kids.filter(x=>x.t==="leaf"&&!x.learned&&x!==l);return k[0]||null}
 function learn(){const l=CARD;if(!l||l.learned)return;S.learned[l.key]=Date.now();l.learned=true;save();paintCard();
-  playLeaf(l);addPts(PTS.learn,"learned "+SN(l.lang));const keep=l.key;draw();CARD=NODES["l:"+keep]||l}
-function playLeaf(l){if(l.uid){const w=S.words.find(x=>x.id===l.uid);if(w)return playWord(w)}speak(l.w,l.lang)}
+  playLeaf(l);addPts(PTS.learn,T("learned {0}",SN(l.lang)));const keep=l.key;draw();CARD=NODES["l:"+keep]||l}
+function playLeaf(l,slow){if(l.uid&&!slow){const w=S.words.find(x=>x.id===l.uid);if(w)return playWord(w)}speak(l.w,l.lang,slow)}
+/* practice: say the word into the mic and the phone checks it. The mic must start inside the tap on iPhone. */
+const norm=t=>String(t).toLowerCase().normalize("NFC").replace(/[\s.,!?¡¿'"“”‘’、。！？，…-]/g,"");
+function similar(a,b){a=norm(a);b=norm(b);if(!a||!b)return 0;if(a===b)return 1;const m=a.length,n=b.length,d=Array.from({length:m+1},(_,i)=>[i]);
+  for(let j=1;j<=n;j++)d[0][j]=j;for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+  return 1-d[m][n]/Math.max(m,n)}
+let LISTEN=null;
+function sayIt(){const l=CARD;if(!l)return;const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){toast("This phone can't listen. Try Safari or Chrome",true);return}
+  if(LISTEN){try{LISTEN.stop()}catch(e){}return}
+  try{speechSynthesis.cancel()}catch(e){}
+  const r=new SR();r.lang=LG(l.lang).tts;r.interimResults=false;r.maxAlternatives=5;LISTEN=r;let got=false;
+  const b=$("cdSay");b.classList.add("rec");$("cdHeard").textContent=T("Listening… say it now");$("cdHeard").className="";
+  r.onresult=e=>{got=true;const alts=[...e.results[0]].map(x=>x.transcript);let best=alts[0]||"",sc=0;
+    alts.forEach(t=>{const v=Math.max(similar(t,l.w),l.ro?similar(t,l.ro):0);if(v>sc){sc=v;best=t}});
+    if(sc>=.75){$("cdHeard").textContent=T("✓ Nailed it!")+"  "+T("Heard: {0}",best);$("cdHeard").className="ok";
+      S.said=S.said||{};if(!S.said[l.key]){S.said[l.key]=Date.now();save();addPts(PTS.nailed,T("said it right"))}}
+    else{$("cdHeard").textContent=(sc>=.45?T("Close! Try again"):"✗")+"  "+T("Heard: {0}",best);$("cdHeard").className="bad"}};
+  r.onerror=()=>{};
+  r.onend=()=>{LISTEN=null;b.classList.remove("rec");if(!got){$("cdHeard").textContent=T("Didn't hear anything. Try again");$("cdHeard").className="bad"}};
+  try{r.start()}catch(e){LISTEN=null;b.classList.remove("rec")}}
 
 /* ---------- badges ---------- */
 const nLearned=()=>Object.keys(S.learned).length+S.words.length;
@@ -202,17 +231,18 @@ const BADGES=[
 {id:"swap1",n:"First swap",d:"Swap words with a friend",ic:"🤝",t:()=>S.swaps>=1},
 {id:"swap10",n:"Bad influence",d:"10 words learned from friends",ic:"😈",t:()=>S.words.filter(w=>w.by==="friend").length>=10},
 {id:"mic",n:"Voice of the people",d:"Record 5 words",ic:"🎙️",t:()=>S.words.filter(w=>w.aud).length>=5},
+{id:"talk5",n:"Smooth talker",d:"Say it right 5 times",ic:"🗣️",t:()=>Object.keys(S.said||{}).length>=5},
 {id:"quiz10",n:"Quiz shark",d:"10 quiz answers right",ic:"🦈",t:()=>S.quizRight>=10},
 {id:"days3",n:"Regular",d:"Play on 3 different days",ic:"📅",t:()=>S.days.length>=3}];
 function foreignLangs(){const s=new Set();Object.keys(S.learned).forEach(k=>s.add(k.split("|")[1]));S.words.forEach(w=>s.add(w.lang));s.delete(S.me.lang);return s.size}
-function checkBadges(){for(const b of BADGES){if(!S.badges.includes(b.id)&&b.t()){S.badges.push(b.id);save();setTimeout(()=>toast("🏅 Badge: "+b.n),900)}}}
+function checkBadges(){for(const b of BADGES){if(!S.badges.includes(b.id)&&b.t()){S.badges.push(b.id);save();setTimeout(()=>toast(T("🏅 Badge: {0}",T(b.n))),900)}}}
 
 /* ---------- speech ---------- */
 let VOICES=[];
 function loadVoices(){try{VOICES=speechSynthesis.getVoices()||[]}catch(e){}}
 try{loadVoices();speechSynthesis.onvoiceschanged=loadVoices}catch(e){}
-function speak(text,lang){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);const t=LG(lang).tts;u.lang=t;
-  const v=VOICES.find(v=>v.lang.replace("_","-")===t)||VOICES.find(v=>v.lang.slice(0,2)===t.slice(0,2));if(v)u.voice=v;u.rate=.85;speechSynthesis.speak(u)}catch(e){toast("This phone can't speak that language",true)}}
+function speak(text,lang,slow){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);const t=LG(lang).tts;u.lang=t;
+  const v=VOICES.find(v=>v.lang.replace("_","-")===t)||VOICES.find(v=>v.lang.slice(0,2)===t.slice(0,2));if(v)u.voice=v;u.rate=slow?.5:.85;speechSynthesis.speak(u)}catch(e){toast("This phone can't speak that language",true)}}
 let PLAYING=null;
 async function playWord(w){
   if(w.aud){const b=await audGet(w.id);if(b){try{if(PLAYING)PLAYING.pause();const a=new Audio(URL.createObjectURL(b));PLAYING=a;await a.play();return}catch(e){}}}
@@ -227,9 +257,9 @@ async function recToggle(btn,done){
   const types=["audio/mp4","audio/webm;codecs=opus","audio/webm"];const mt=types.find(t=>MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(t));
   const r=mt?new MediaRecorder(st,{mimeType:mt}):new MediaRecorder(st);const parts=[];REC=r;
   r.ondataavailable=e=>{if(e.data&&e.data.size)parts.push(e.data)};
-  r.onstop=()=>{st.getTracks().forEach(t=>t.stop());REC=null;btn.classList.remove("rec");btn.querySelector("span").textContent="Record again";clearTimeout(r._t);
+  r.onstop=()=>{st.getTracks().forEach(t=>t.stop());REC=null;btn.classList.remove("rec");btn.querySelector("span").textContent=T("Record again");clearTimeout(r._t);
     const b=new Blob(parts,{type:r.mimeType||mt||"audio/mp4"});done(b.size>800?b:null)};
-  r.start();btn.classList.add("rec");btn.querySelector("span").textContent="Stop recording";r._t=setTimeout(()=>{if(r.state==="recording")r.stop()},6000)}
+  r.start();btn.classList.add("rec");btn.querySelector("span").textContent=T("Stop recording");r._t=setTimeout(()=>{if(r.state==="recording")r.stop()},6000)}
 
 /* ---------- translate (Google, same free address Speakeasy uses) ---------- */
 async function trans(q,from,to){
@@ -241,25 +271,25 @@ async function trans(q,from,to){
 /* ---------- add / edit a word ---------- */
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 function branchOptions(sel){let h="";
-  allHubs().forEach(hb=>{h+=`<optgroup label="${esc(hb.en)}">`+allVars().filter(v=>v.hub===hb.id).map(v=>`<option value="${v.id}" ${v.id===sel?"selected":""}>${esc(v.en)}</option>`).join("")+
-    (hb.id==="other"?"":`<option value="new:${hb.id}">➕ New branch under ${esc(hb.en)}</option>`)+`</optgroup>`});
-  return h+`<optgroup label="Something else"><option value="newhub" ${sel==="newhub"?"selected":""}>➕ A brand-new idea</option></optgroup>`}
+  allHubs().forEach(hb=>{const hl=hubLabel(hb);h+=`<optgroup label="${esc(hl)}">`+allVars().filter(v=>v.hub===hb.id).map(v=>`<option value="${v.id}" ${v.id===sel?"selected":""}>${esc(varLabel(v))}</option>`).join("")+
+    (hb.id==="other"?"":`<option value="new:${hb.id}">${esc(T("➕ New branch under {0}",hl))}</option>`)+`</optgroup>`});
+  return h+`<optgroup label="${esc(T("Something else"))}"><option value="newhub" ${sel==="newhub"?"selected":""}>${esc(T("➕ A brand-new idea"))}</option></optgroup>`}
 let ED=null,EDBLOB=null;
 function openEditor(w,ctx){
   ED={w:w||null,ctx:ctx||{by:"me"}};EDBLOB=null;
   const lang=w?w.lang:(ED.ctx.lang||S.me.lang||"en");
-  $("edTitle").textContent=w?"Edit word":ED.ctx.by==="friend"?(S.friend.name||"Your friend")+" teaches you":ED.ctx.title||"Add a word";
+  $("edTitle").textContent=w?T("Edit word"):ED.ctx.by==="friend"?T("{0} teaches you",S.friend.name||T("Your friend")):ED.ctx.title||T("Add a word");
   $("edHint").textContent=w?"":ED.ctx.hint||"";$("edHint").hidden=!$("edHint").textContent;
   $("edBranch").innerHTML=branchOptions(w?w.var:(ED.ctx.var||"newhub"));
-  $("edWord").value=w?w.w:"";$("edMean").value=w?w.mean||"":"";$("edLang").value=lang;$("edNote").value=w?w.note||"":"";
+  $("edWord").value=w?w.w:"";$("edMean").value=w?w.mean||"":"";$("edLang").value=lang;$("edNote").value=w?w.note||"":"";$("edRo").value=w?w.ro||"":"";
   setRude(w?w.rude:3);setKind(w?w.kind:"swear");branchChanged();
-  const rb=$("edRec");rb.classList.remove("rec");rb.querySelector("span").textContent=w&&w.aud?"Record again":"Record how it sounds";
+  const rb=$("edRec");rb.classList.remove("rec");rb.querySelector("span").textContent=T(w&&w.aud?"Record again":"Record how it sounds");
   $("edPlayRec").hidden=!(w&&w.aud);$("edRecRow").hidden=!!ED.ctx.noRec;$("edDel").hidden=!w;
-  $("edLangRow").hidden=!!ED.ctx.lockLang&&!w;$("edLangFixed").hidden=!$("edLangRow").hidden;$("edLangFixed").textContent="Language: "+LG(lang).n;
+  $("edLangRow").hidden=!!ED.ctx.lockLang&&!w;$("edLangFixed").hidden=!$("edLangRow").hidden;$("edLangFixed").textContent=T("Language: {0}",LN(lang));
   $("ed").showModal();setTimeout(()=>$("edWord").focus(),60)}
 function branchChanged(){const b=$("edBranch").value,nw=b==="newhub"||b.startsWith("new:");
-  $("edMeanLbl").textContent=nw?"What it means in English (this names the new branch)":"What it means (English, optional)"}
-function setRude(n){$("edRude").dataset.v=n;[...$("edRude").children].forEach((b,i)=>b.classList.toggle("on",i<n));$("edRudeTxt").textContent=["","Mild","Cheeky","Rude","Very rude","Nuclear"][n]}
+  $("edMeanLbl").textContent=T(nw?"What it means (this names the new branch)":"What it means (optional)")}
+function setRude(n){$("edRude").dataset.v=n;[...$("edRude").children].forEach((b,i)=>b.classList.toggle("on",i<n));$("edRudeTxt").textContent=T(["","Mild","Cheeky","Rude","Very rude","Nuclear"][n])}
 function setKind(k){$("edKind").dataset.v=k;[...$("edKind").children].forEach(b=>b.classList.toggle("on",b.dataset.k===k))}
 /* turns the branch choice into a branch id, creating a new branch or idea when asked */
 function resolveBranch(b,mean){
@@ -270,23 +300,23 @@ async function saveEditor(){
   const word=$("edWord").value.trim();if(!word){toast("Type the word first",true);$("edWord").focus();return}
   const lang=$("edLang").value,mean=$("edMean").value.trim(),b=$("edBranch").value;
   if((b==="newhub"||b.startsWith("new:"))&&!mean){toast("Type what it means: that names the new branch",true);$("edMean").focus();return}
-  const rude=+$("edRude").dataset.v||3,kind=$("edKind").dataset.v||"swear",note=$("edNote").value.trim();
+  const rude=+$("edRude").dataset.v||3,kind=$("edKind").dataset.v||"swear",note=$("edNote").value.trim(),ro=$("edRo").value.trim();
   let w=ED.w,fresh=false;
   const dupe=x=>x!==w&&x.lang===lang&&x.w.toLowerCase()===word.toLowerCase();
   if(S.words.some(dupe)){toast("Already on your map",true);return}
   const br=resolveBranch(b,mean);const v=varById(br.id);
   if(!w&&v&&v.w[lang]&&split(v.w[lang])[0].toLowerCase()===word.toLowerCase()){
     // it's a built-in word: just unlock it
-    S.learned[br.id+"|"+lang]=Date.now();save();$("ed").close();draw();addPts(PTS.learn,"learned "+SN(lang));return}
+    S.learned[br.id+"|"+lang]=Date.now();save();$("ed").close();draw();addPts(PTS.learn,T("learned {0}",SN(lang)));return}
   if(!w){w={id:uid(),ts:Date.now(),by:ED.ctx.by||"me",from:ED.ctx.by==="friend"?S.friend.name:""};S.words.push(w);fresh=true}
   const newLang=fresh&&v&&!v.w[lang]&&!S.words.some(x=>x!==w&&x.var===br.id&&x.lang===lang);
-  Object.assign(w,{w:word,lang,mean:mean||(v?v.en:""),rude,kind,note,var:br.id});
+  Object.assign(w,{w:word,lang,mean:mean||(v?v.en:""),rude,kind,note,ro,var:br.id});
   if(EDBLOB){if(await audPut(w.id,EDBLOB))w.aud=true}
   if(S.share&&ED.ctx.by!=="teach")queueShare(w);
   save();$("ed").close();draw();
   if(ED.ctx.onSaved)ED.ctx.onSaved(w,fresh);
-  if(fresh){const by=ED.ctx.by;let n=by==="friend"?PTS.friend:by==="teach"?PTS.teach:PTS.add,why=by==="friend"?"learned a word":by==="teach"?"taught a word":"new word";
-    if(br.fresh){n+=PTS.branch;why="new branch!"}else if(newLang&&by!=="teach"){n+=PTS.newlang;why="new language on the map!"}
+  if(fresh){const by=ED.ctx.by;let n=by==="friend"?PTS.friend:by==="teach"?PTS.teach:PTS.add,why=T(by==="friend"?"learned a word":by==="teach"?"taught a word":"new word");
+    if(br.fresh){n+=PTS.branch;why=T("new branch!")}else if(newLang&&by!=="teach"){n+=PTS.newlang;why=T("new language on the map!")}
     addPts(n,why);if(S.tab==="map"&&by!=="teach")setTimeout(()=>{const vn=NODES["v:"+br.id];if(vn)flyTo(vn)},300)}
   else toast("✓ Saved")}
 
@@ -297,26 +327,26 @@ function renderSwap(){
   if(document.activeElement!==$("swFriendName"))$("swFriendName").value=S.friend.name||"";$("swFriendLang").value=S.friend.lang||"";
   $("swSteps").hidden=!ok;$("swNeed").hidden=!!ok;
   if(!ok)return;
-  const fn=S.friend.name||"Your friend";
-  $("swLearnBtn").innerHTML=`👂 <b>${esc(fn)} teaches me</b><small>a word in ${esc(LG(S.friend.lang).n)}</small>`;
-  $("swTeachBtn").innerHTML=`🗣️ <b>I teach ${esc(fn)}</b><small>a word in ${esc(LG(S.me.lang).n)}</small>`;
-  const L=SESSION.learned.map(id=>S.words.find(w=>w.id===id)).filter(Boolean),T=SESSION.taught;
+  const fn=S.friend.name||T("Your friend");
+  $("swLearnBtn").innerHTML=`👂 <b>${esc(T("{0} teaches me",fn))}</b><small>${esc(T("a word in {0}",LN(S.friend.lang)))}</small>`;
+  $("swTeachBtn").innerHTML=`🗣️ <b>${esc(T("I teach {0}",fn))}</b><small>${esc(T("a word in {0}",LN(S.me.lang)))}</small>`;
+  const L=SESSION.learned.map(id=>S.words.find(w=>w.id===id)).filter(Boolean),TG=SESSION.taught;
   const card=(w,c,play)=>`<div class="tile" style="--c:${c}"><div class="th">${esc(w.w)}</div><div class="en">${esc(w.mean||"")}</div>${play}</div>`;
-  $("swLearned").innerHTML=L.length?`<div class="sec" style="--c:#4cc9f0">Learned this swap (${L.length})</div><div class="grid">${L.map(w=>card(w,"#4cc9f0",`<button class="ib play" data-play="${w.id}">🔊 Play</button>`)).join("")}</div>`:"";
-  $("swTaught").innerHTML=T.length?`<div class="sec" style="--c:#ff9f1c">Taught this swap (${T.length})</div><div class="grid">${T.map(w=>card(w,"#ff9f1c",`<button class="ib play" data-say="${encodeURIComponent(w.w)}" data-lang="${w.lang}">🔊 Play</button>`)).join("")}</div>`:"";
-  $("swSend").hidden=!T.length;$("swSend").textContent="📲 Send "+T.length+" word"+(T.length>1?"s":"")+" to "+fn}
+  $("swLearned").innerHTML=L.length?`<div class="sec" style="--c:#4cc9f0">${esc(T("Learned this swap"))} (${L.length})</div><div class="grid">${L.map(w=>card(w,"#4cc9f0",`<button class="ib play" data-play="${w.id}">${esc(T("🔊 Play"))}</button>`)).join("")}</div>`:"";
+  $("swTaught").innerHTML=TG.length?`<div class="sec" style="--c:#ff9f1c">${esc(T("Taught this swap"))} (${TG.length})</div><div class="grid">${TG.map(w=>card(w,"#ff9f1c",`<button class="ib play" data-say="${encodeURIComponent(w.w)}" data-lang="${w.lang}">${esc(T("🔊 Play"))}</button>`)).join("")}</div>`:"";
+  $("swSend").hidden=!TG.length;$("swSend").textContent=T("📲 Send {0} words to {1}",TG.length,fn).replace(/ 1 words/," 1 word")}
 function swLearn(){
-  openEditor(null,{by:"friend",lang:S.friend.lang,lockLang:true,hint:"Hand the phone to "+(S.friend.name||"your friend")+". They type a word, pick where it goes on the map, and record themselves saying it.",
+  openEditor(null,{by:"friend",lang:S.friend.lang,lockLang:true,hint:T("Hand the phone to {0}. They type a word, pick where it goes on the map, and record themselves saying it.",S.friend.name||T("your friend")),
     onSaved:(w,fresh)=>{if(!fresh)return;SESSION.learned.push(w.id);S.swaps++;save();renderSwap();checkBadges();setTimeout(()=>tryIt(w),400)}})}
 /* the learner says the word back; the teacher judges */
-function tryIt(w){$("tyWord").textContent=w.w;$("tyMean").textContent=w.mean||"";$("tyWho").textContent="Now you say it. "+(S.friend.name||"Your friend")+" decides if you nailed it.";
+function tryIt(w){$("tyWord").textContent=w.w;$("tyMean").textContent=w.mean||"";$("tyWho").textContent=T("Now you say it. {0} decides if you nailed it.",S.friend.name||T("Your friend"));
   $("ty").dataset.id=w.id;$("ty").showModal();playWord(w)}
 function swTeach(){
-  openEditor(null,{by:"teach",lang:S.me.lang,lockLang:true,noRec:true,title:"Teach "+(S.friend.name||"your friend")+" a word",hint:"Type a word in your language. It goes to your friend's phone when you tap Send.",
+  openEditor(null,{by:"teach",lang:S.me.lang,lockLang:true,noRec:true,title:T("Teach {0} a word",S.friend.name||T("your friend")),hint:T("Type a word in your language. It goes to your friend's phone when you tap Send."),
     onSaved:(w,fresh)=>{if(!fresh)return;
       // taught words stay off my own map: they belong to the friend
       S.words=S.words.filter(x=>x.id!==w.id);const v=varById(w.var),h=v&&hubById(v.hub);
-      SESSION.taught.push({w:w.w,lang:w.lang,mean:w.mean,rude:w.rude,kind:w.kind,var:w.var,ven:v?v.en:"",hub:v?v.hub:"",hen:h?h.en:""});
+      SESSION.taught.push({w:w.w,ro:w.ro||"",lang:w.lang,mean:w.mean,rude:w.rude,kind:w.kind,var:w.var,ven:v?v.en:"",hub:v?v.hub:"",hen:h?h.en:""});
       S.swaps++;save();draw();renderSwap();checkBadges()}})}
 
 /* the share link carries the words in the address, so no server is needed */
@@ -327,12 +357,12 @@ function packLink(){const seedV=id=>SEED.some(h=>h.vars.some(v=>v.id===id));
   return location.origin+location.pathname+"#w="+b64u(JSON.stringify(p))}
 function sendWords(){
   const url=packLink();$("qrBox").innerHTML="";
-  try{const q=qrcode(0,"L");q.addData(url);q.make();$("qrBox").innerHTML=q.createSvgTag({cellSize:6,margin:2,scalable:true})}catch(e){$("qrBox").innerHTML='<p class="note">Too many words for one code. Use the Share button instead.</p>'}
-  $("qrWho").textContent=(S.friend.name||"Your friend")+": open your camera and point it at this code.";
+  try{const q=qrcode(0,"L");q.addData(url);q.make();$("qrBox").innerHTML=q.createSvgTag({cellSize:6,margin:2,scalable:true})}catch(e){$("qrBox").innerHTML='<p class="note">'+esc(T("Too many words for one code. Use the Share button instead."))+'</p>'}
+  $("qrWho").textContent=T("{0}: open your camera and point it at this code.",S.friend.name||T("Your friend"));
   $("qr").dataset.url=url;$("qr").showModal()}
 async function shareLink(){const url=$("qr").dataset.url;
-  try{if(navigator.share){await navigator.share({title:"Swear Jar",text:"Words from "+(S.me.name||"your friend"),url});return}}catch(e){if(e&&e.name==="AbortError")return}
-  try{await navigator.clipboard.writeText(url);toast("✓ Link copied")}catch(e){prompt("Copy this link",url)}}
+  try{if(navigator.share){await navigator.share({title:"Swear Jar",text:T("Words from {0}",S.me.name||T("your friend")),url});return}}catch(e){if(e&&e.name==="AbortError")return}
+  try{await navigator.clipboard.writeText(url);toast("✓ Link copied")}catch(e){prompt(T("Copy this link"),url)}}
 /* receiving: someone opened a share link */
 function receive(){
   const m=location.hash.match(/#w=([A-Za-z0-9_-]+)/);if(!m)return false;
@@ -351,44 +381,45 @@ function receive(){
     if(S.words.some(x=>x.lang===lang&&x.w.toLowerCase()===w.toLowerCase()))continue;
     S.words.push({id:uid(),ts:Date.now(),by:"friend",from:String(p.f||"").slice(0,30),w,lang,var:vid,mean:String(a[1]||"").slice(0,160),rude:Math.max(1,Math.min(5,+a[2]||3)),kind:KM[a[3]]||"slang"});n++}
   S.swaps++;save();
-  if(n)setTimeout(()=>addPts(n*PTS.friend,n+" word"+(n>1?"s":"")+" from "+(p.f||"a friend")),500);else toast("You already have those words");
+  if(n)setTimeout(()=>addPts(n*PTS.friend,T("{0} words from {1}",n,p.f||T("a friend"))),500);else toast("You already have those words");
   return true}
 
 /* ---------- quiz: what does this foreign word mean? ---------- */
 let QZ=null;
-function quizPool(){build();const out=[];TREE.kids.forEach(h=>h.kids.forEach(v=>v.kids.forEach(l=>{if(l.t==="leaf"&&l.learned&&l.lang!=="en"&&l.lang!==S.me.lang)out.push({l,mean:v.en})})));return out}
+function quizPool(){build();const out=[];TREE.kids.forEach(h=>h.kids.forEach(v=>v.kids.forEach(l=>{if(l.t==="leaf"&&l.learned&&l.lang!==S.me.lang)out.push({l,mean:v.en})})));return out}
 function renderQuiz(){
   const pool=quizPool(),means=[...new Set(pool.map(x=>x.mean))];
-  if(pool.length<4){$("qzBody").innerHTML=`<div class="empty">Learn at least 4 foreign words on the map to play.<br>You have ${pool.length}.<br><br>Tap a 🔒 word on the map to learn it.</div>`;return}
-  if(means.length<4){$("qzBody").innerHTML=`<div class="empty">Learn foreign words on at least 4 different branches to play (like Fuck off! or Bullshit!).<br>You have ${means.length}.<br><br>Tap a 🔒 word on the map to learn it.</div>`;return}
+  if(pool.length<4){$("qzBody").innerHTML=`<div class="empty">${esc(T("Learn at least 4 foreign words on the map to play."))}<br>${esc(T("You have {0}.",pool.length))}<br><br>${esc(T("Tap a 🔒 word on the map to learn it."))}</div>`;return}
+  if(means.length<4){$("qzBody").innerHTML=`<div class="empty">${esc(T("Learn foreign words on at least 4 different branches to play (like Fuck off! or Bullshit!)."))}<br>${esc(T("You have {0}.",means.length))}<br><br>${esc(T("Tap a 🔒 word on the map to learn it."))}</div>`;return}
   const a=pool[Math.floor(Math.random()*pool.length)];
   const opts=[a.mean,...means.filter(m=>m!==a.mean).sort(()=>Math.random()-.5).slice(0,3)].sort(()=>Math.random()-.5);
   QZ={a,done:false};
-  $("qzBody").innerHTML=`<p class="qzq">What does this mean?</p><div class="qzw">${esc(a.l.w)}</div><small class="qzl">${LG(a.l.lang).f} ${esc(LG(a.l.lang).n)}</small>
-    <button class="ib wide" data-qplay>🔊 Play it</button>
-    <div class="qzo">${opts.map(o=>`<button class="ib opt" data-ans="${esc(o)}">${esc(o)}</button>`).join("")}</div>
-    <button class="ib wide pri" id="qzNext" hidden>Next word ➜</button>`;
+  const ml=m=>{const v=allVars().find(v=>v.en===m);return v?varLabel(v):m};
+  $("qzBody").innerHTML=`<p class="qzq">${esc(T("What does this mean?"))}</p><div class="qzw">${esc(a.l.w)}</div>${a.l.ro?`<div class="qzro">${esc(T("Sounds like"))}: <b>${esc(a.l.ro)}</b></div>`:""}<small class="qzl">${LG(a.l.lang).f} ${esc(LN(a.l.lang))}</small>
+    <button class="ib wide" data-qplay>${esc(T("🔊 Play it"))}</button>
+    <div class="qzo">${opts.map(o=>`<button class="ib opt" data-ans="${esc(o)}">${esc(ml(o))}</button>`).join("")}</div>
+    <button class="ib wide pri" id="qzNext" hidden>${esc(T("Next word ➜"))}</button>`;
   playLeaf(a.l)}
 function answer(btn){if(!QZ||QZ.done)return;QZ.done=true;const right=btn.dataset.ans===QZ.a.mean;
   document.querySelectorAll("#qzBody .opt").forEach(b=>{if(b.dataset.ans===QZ.a.mean)b.classList.add("right")});
-  if(right){S.quizRight++;addPts(PTS.quiz,"right answer")}else{btn.classList.add("wrong");toast("It means: "+QZ.a.mean,true)}
+  if(right){S.quizRight++;addPts(PTS.quiz,T("right answer"))}else{btn.classList.add("wrong");const v=allVars().find(v=>v.en===QZ.a.mean);toast(T("It means: {0}",v?varLabel(v):QZ.a.mean),true)}
   $("qzNext").hidden=false}
 
 /* ---------- score ---------- */
-function paintScore(){$("hdrPts").textContent=S.pts+" pts"}
+function paintScore(){$("hdrPts").textContent=S.pts+" "+T("pts")}
 function renderScore(){build();
   const[g,a]=progress(TREE);
   const lvl=Math.floor(Math.sqrt(S.pts/50))+1,next=Math.pow(lvl,2)*50,prev=Math.pow(lvl-1,2)*50;
   const pct=Math.round((S.pts-prev)/(next-prev)*100);
-  $("scBody").innerHTML=`<div class="big"><div class="pts">${S.pts}</div><div>points · Level ${lvl}</div>
-    <div class="bar"><i style="width:${pct}%"></i></div><small>${next-S.pts} points to level ${lvl+1}</small></div>
-    <div class="stats"><div><b>${g} / ${a}</b>words learned</div><div><b>${foreignLangs()}</b>foreign languages</div><div><b>${S.swaps}</b>swaps</div><div><b>${S.quizRight}</b>quiz right</div></div>
-    <div class="sec" style="--c:#ff6b9d">Your jar</div>
+  $("scBody").innerHTML=`<div class="big"><div class="pts">${S.pts}</div><div>${esc(T("points · Level {0}",lvl))}</div>
+    <div class="bar"><i style="width:${pct}%"></i></div><small>${esc(T("{0} points to level {1}",next-S.pts,lvl+1))}</small></div>
+    <div class="stats"><div><b>${g} / ${a}</b>${esc(T("words learned"))}</div><div><b>${foreignLangs()}</b>${esc(T("foreign languages"))}</div><div><b>${S.swaps}</b>${esc(T("swaps"))}</div><div><b>${S.quizRight}</b>${esc(T("quiz right"))}</div></div>
+    <div class="sec" style="--c:#ff6b9d">${esc(T("Your jar"))}</div>
     ${TREE.kids.map(h=>{const[x,y]=progress(h);return`<div class="hrow"><b style="color:${h.c}">${esc(h.en)}</b><div class="bar"><i style="width:${y?Math.round(x/y*100):0}%;background:${h.c}"></i></div><span>${x} / ${y}</span></div>`}).join("")}
-    <div class="sec" style="--c:#ffd23f">Badges (${S.badges.length} of ${BADGES.length})</div>
-    <div class="badges">${BADGES.map(b=>`<div class="badge ${S.badges.includes(b.id)?"got":""}"><span>${b.ic}</span><b>${esc(b.n)}</b><small>${esc(b.d)}</small></div>`).join("")}</div>
-    <div class="sec" style="--c:#4cc9f0">How to score</div>
-    <div class="note">Learn a word on the map: ${PTS.learn} · Add a word: ${PTS.add} · Add a new language to a branch: +${PTS.newlang} more · Start a new branch: +${PTS.branch} more · Learn from a friend: ${PTS.friend} · Teach a friend: ${PTS.teach} · Say it right: ${PTS.nailed} · Quiz answer right: ${PTS.quiz}</div>`}
+    <div class="sec" style="--c:#ffd23f">${esc(T("Badges ({0} of {1})",S.badges.length,BADGES.length))}</div>
+    <div class="badges">${BADGES.map(b=>`<div class="badge ${S.badges.includes(b.id)?"got":""}"><span>${b.ic}</span><b>${esc(T(b.n))}</b><small>${esc(T(b.d))}</small></div>`).join("")}</div>
+    <div class="sec" style="--c:#4cc9f0">${esc(T("How to score"))}</div>
+    <div class="note">${esc(T("Learn a word on the map: {0} · Add a word: {1} · Add a new language to a branch: +{2} more · Start a new branch: +{3} more · Learn from a friend: {4} · Teach a friend: {5} · Say it right: {6} · Quiz answer right: {7}",PTS.learn,PTS.add,PTS.newlang,PTS.branch,PTS.friend,PTS.teach,PTS.nailed,PTS.quiz))}</div>`}
 
 /* ---------- share to Speakeasy (off by default, anonymous) ---------- */
 function queueShare(w){if(S.queue.some(q=>q.id===w.id))return;S.queue.push({id:w.id,w:w.w,lang:w.lang,mean:w.mean,rude:w.rude,kind:w.kind});if(S.queue.length>500)S.queue.shift();save();flushShare()}
@@ -400,18 +431,22 @@ async function flushShare(){
   save()}
 
 /* ---------- settings / setup ---------- */
-function langOptions(sel,blankTxt){return(blankTxt?`<option value="">${blankTxt}</option>`:"")+LANGS.map(l=>`<option value="${l.c}" ${l.c===sel?"selected":""}>${esc(l.n)}</option>`).join("")}
+function langOptions(sel,blankTxt){return(blankTxt?`<option value="">${blankTxt}</option>`:"")+LANGS.map(l=>`<option value="${l.c}" ${l.c===sel?"selected":""}>${esc(LN(l.c))}</option>`).join("")}
 function openSettings(first){
-  $("stTitle").textContent=first?"Welcome to Swear Jar":"Settings";$("stIntro").hidden=!first;
-  $("stName").value=S.me.name||"";$("stLang").innerHTML=langOptions(S.me.lang,"Choose your language");$("stShare").checked=!!S.share;
-  $("stClose").textContent=first?"Let's go":"Done";$("stReset").hidden=!!first;$("st").showModal()}
+  applyStatic();$("stTitle").textContent=T(first?"Welcome to Swear Jar":"Settings");$("stIntro").hidden=!first;
+  $("stName").value=S.me.name||"";$("stLang").innerHTML=langOptions(S.me.lang,T("Choose your language"));$("stShare").checked=!!S.share;
+  $("stClose").textContent=T(first?"Let's go":"Done");$("stReset").hidden=!!first;$("st").showModal()}
 function closeSettings(){
   const l=$("stLang").value;if(!l){toast("Choose your language",true);return}
   S.me.name=$("stName").value.trim().slice(0,30);S.me.lang=l;
   const was=S.share;S.share=$("stShare").checked;
   if(S.share&&!was){S.words.forEach(queueShare);toast("✓ Thanks! Your words help Speakeasy")}
   if(!S.share)S.queue=[];
-  save();$("st").close();draw();go(S.tab,true)}
+  save();$("st").close();uiLang();go(S.tab,true)}
+/* everything that shows words in the player's language */
+function uiLang(){applyStatic();paintScore();
+  $("edLang").innerHTML=langOptions("en");$("swFriendLang").innerHTML=langOptions(S.friend.lang||"",T("Choose their language"));
+  $("edKind").innerHTML=KINDS.map(k=>`<button type="button" class="chip" style="--c:${k.c}" data-k="${k.k}">${esc(T(k.n))}</button>`).join("")}
 
 /* ---------- tabs ---------- */
 function layout(){const h=document.querySelector("header").getBoundingClientRect().bottom,n=document.querySelector("nav").getBoundingClientRect().height;
@@ -423,9 +458,7 @@ function go(t,keepCam){S.tab=t;save();document.querySelectorAll("nav button").fo
 
 /* ---------- events ---------- */
 function wire(){
-  $("edLang").innerHTML=langOptions("en");$("swFriendLang").innerHTML=langOptions("","Choose their language");
   $("edRude").innerHTML=[1,2,3,4,5].map(i=>`<button type="button" class="chili" data-r="${i}" aria-label="${i} chillies">🌶️</button>`).join("");
-  $("edKind").innerHTML=KINDS.map(k=>`<button type="button" class="chip" style="--c:${k.c}" data-k="${k.k}">${k.n}</button>`).join("");
   $("edRude").onclick=e=>{const b=e.target.closest("[data-r]");if(b)setRude(+b.dataset.r)};
   $("edKind").onclick=e=>{const b=e.target.closest("[data-k]");if(b)setKind(b.dataset.k)};
   $("edBranch").onchange=branchChanged;
@@ -433,14 +466,14 @@ function wire(){
   $("edPlayRec").onclick=async()=>{const b=EDBLOB||(ED.w&&await audGet(ED.w.id));if(b){const a=new Audio(URL.createObjectURL(b));a.play().catch(()=>{})}};
   $("edSpeak").onclick=()=>{const w=$("edWord").value.trim();if(w)speak(w,$("edLang").value)};
   $("edTr").onclick=async()=>{const w=$("edWord").value.trim();if(!w){toast("Type the word first",true);return}
-    const b=$("edTr");b.disabled=true;b.textContent="Translating…";
-    try{const t=await trans(w,LG($("edLang").value).mm,"en");if(t){$("edMean").value=t;toast("Check it: slang often translates wrong")}else toast("No translation found",true)}catch(e){toast("No internet",true)}
-    b.disabled=false;b.textContent="🌐 Translate"};
+    const b=$("edTr");b.disabled=true;b.textContent=T("Translating…");
+    try{const t=await trans(w,LG($("edLang").value).mm,S.me.lang?LG(S.me.lang).mm:"en");if(t){$("edMean").value=t;toast("Check it: slang often translates wrong")}else toast("No translation found",true)}catch(e){toast("No internet",true)}
+    b.disabled=false;b.textContent=T("🌐 Translate")};
   $("edSave").onclick=saveEditor;$("edCancel").onclick=()=>{if(REC)REC.stop();$("ed").close()};
-  $("edDel").onclick=()=>{if(!ED.w||!confirm("Delete “"+ED.w.w+"”?"))return;S.words=S.words.filter(x=>x!==ED.w);audDel(ED.w.id);save();$("ed").close();draw();toast("Deleted")};
-  $("cdLearn").onclick=learn;$("cdPlay").onclick=()=>CARD&&playLeaf(CARD);$("cdClose").onclick=()=>$("cd").close();
+  $("edDel").onclick=()=>{if(!ED.w||!confirm(T("Delete “{0}”?",ED.w.w)))return;S.words=S.words.filter(x=>x!==ED.w);audDel(ED.w.id);save();$("ed").close();draw();toast("Deleted")};
+  $("cdLearn").onclick=learn;$("cdPlay").onclick=()=>CARD&&playLeaf(CARD);$("cdSlow").onclick=()=>CARD&&playLeaf(CARD,true);$("cdSay").onclick=sayIt;$("cdClose").onclick=()=>{if(LISTEN)try{LISTEN.stop()}catch(e){}$("cd").close()};
   $("cdEdit").onclick=()=>{const w=CARD&&S.words.find(x=>x.id===CARD.uid);$("cd").close();if(w)openEditor(w)};
-  $("cdNext").onclick=()=>{const n=CARD&&nextLocked(CARD);if(n){CARD=n;$("cdFlag").textContent=LG(n.lang).f;$("cdLang").textContent=LG(n.lang).n;paintCard()}};
+  $("cdNext").onclick=()=>{const n=CARD&&nextLocked(CARD);if(n){CARD=n;$("cdFlag").textContent=LG(n.lang).f;$("cdLang").textContent=LN(n.lang);paintCard()}};
   document.body.addEventListener("click",e=>{
     const p=e.target.closest("[data-play]");if(p){const w=S.words.find(x=>x.id===p.dataset.play);if(w)playWord(w);return}
     const s=e.target.closest("[data-say]");if(s){speak(decodeURIComponent(s.dataset.say),s.dataset.lang);return}
@@ -456,12 +489,12 @@ function wire(){
   $("tyYes").onclick=()=>{$("ty").close();addPts(PTS.nailed,"nailed it")};
   $("tyNo").onclick=()=>{$("ty").close();toast("Keep practising!")};
   $("setBtn").onclick=()=>openSettings(false);$("stClose").onclick=closeSettings;
-  $("stReset").onclick=()=>{if(!confirm("Delete ALL your words, points and badges?"))return;const me=S.me;S=blank();S.me=me;save();$("st").close();FOCUS="root";go("map");toast("Everything cleared")};
+  $("stReset").onclick=()=>{if(!confirm(T("Delete ALL your words, points and badges?")))return;const me=S.me;S=blank();S.me=me;save();$("st").close();FOCUS="root";go("map");toast("Everything cleared")};
   $("st").addEventListener("cancel",e=>{if(!S.me.lang)e.preventDefault()});
   window.addEventListener("online",flushShare);
   wireMap()}
 
-load();wire();
+load();wire();uiLang();
 const got=receive();
 if(!S.me.lang)openSettings(true);
 go(got?"map":S.tab||"map");paintScore();flushShare();

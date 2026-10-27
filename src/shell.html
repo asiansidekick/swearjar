@@ -11,6 +11,7 @@
 <style>
 :root{--bg:#07070f;--card:#16162a;--ink:#fff;--mute:#d4d4ee;--line:#3b3b66;--acc:#ffd23f;--accink:#101010;--danger:#ff6b6b;color-scheme:dark}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
 html{padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.3 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Thai",sans-serif}
 header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:linear-gradient(180deg,#14143a,#07070f);border-bottom:2px solid #ffd23f;padding:10px 14px;display:flex;align-items:center;gap:10px}
@@ -123,21 +124,25 @@ body.onmap #toast{bottom:calc(var(--nh,80px) + 76px)}
 #cd .wide{margin-top:8px}
 .hrow{display:grid;grid-template-columns:90px 1fr 70px;gap:10px;align-items:center;margin:8px 0;font-size:18px}.hrow .bar{margin:0}.hrow span{text-align:right;color:#d4d4ee}
 optgroup{font-weight:800}
+#cdRo{text-align:center;font-size:20px;color:#d4d4ee}#cdRo b{font-size:24px;color:#fff;font-style:italic}
+.cdrow{display:flex;gap:8px;margin-top:8px}.cdrow .ib{flex:1;font-size:20px}
+#cdHeard{text-align:center;font-size:19px;font-weight:700;min-height:26px;margin-top:8px;color:#d4d4ee}#cdHeard.ok{color:#7bd88f}#cdHeard.bad{color:#ff6b6b}
+.qzro{text-align:center;font-size:19px;color:#d4d4ee;margin-top:4px}.qzro b{color:#fff}
 </style>
 </head>
 <body>
-<header><h1><span>Swear Jar</span> 🫙</h1><div id="hdrPts">0 pts</div><button class="ib" id="setBtn">⚙️ Settings</button></header>
+<header><h1><span>Swear Jar</span> 🫙</h1><div id="hdrPts">0 pts</div><button class="ib" id="setBtn" data-t="⚙️ Settings">⚙️ Settings</button></header>
 <main>
 <section id="tab-map">
   <div id="map"><svg width="100%" height="100%"><g id="world"></g></svg></div>
-  <div id="mbar"><button class="ib" id="mBack">⬅ Back</button><button class="ib" id="mHome">🫙 Whole map</button><button class="ib pri" id="mAdd">➕ Add a word</button></div>
-  <div id="mhint">Tap a bubble to zoom in · pinch or drag to explore</div>
+  <div id="mbar"><button class="ib" id="mBack" data-t="⬅ Back">⬅ Back</button><button class="ib" id="mHome" data-t="🫙 Whole map">🫙 Whole map</button><button class="ib pri" id="mAdd" data-t="➕ Add a word">➕ Add a word</button></div>
+  <div id="mhint" data-t="Tap a bubble to zoom in · pinch or drag to explore">Tap a bubble to zoom in · pinch or drag to explore</div>
 </section>
 <section id="tab-swap" hidden>
-  <div class="note">Sit with a friend who speaks another language. Take turns teaching each other rude words. You both score.</div>
-  <label for="swFriendName">Friend's name</label><input id="swFriendName" placeholder="e.g. Nok" autocomplete="off">
-  <label for="swFriendLang">Friend's language</label><select id="swFriendLang"></select>
-  <p class="note" id="swNeed">Choose your friend's language to start.</p>
+  <div class="note" data-t="Sit with a friend who speaks another language. Take turns teaching each other rude words. You both score.">Sit with a friend who speaks another language. Take turns teaching each other rude words. You both score.</div>
+  <label for="swFriendName" data-t="Friend's name">Friend's name</label><input id="swFriendName" placeholder="e.g. Nok" data-tp="e.g. Nok" autocomplete="off">
+  <label for="swFriendLang" data-t="Friend's language">Friend's language</label><select id="swFriendLang"></select>
+  <p class="note" id="swNeed" data-t="Choose your friend's language to start.">Choose your friend's language to start.</p>
   <div id="swSteps" hidden>
     <button class="ib bigbtn" id="swLearnBtn"></button>
     <button class="ib bigbtn" id="swTeachBtn"></button>
@@ -149,65 +154,67 @@ optgroup{font-weight:800}
 <section id="tab-score" hidden><div id="scBody"></div></section>
 </main>
 <nav>
-  <button data-tab="map"><i>🫙</i>Map</button>
-  <button data-tab="swap"><i>🤝</i>Swap</button>
-  <button data-tab="quiz"><i>❓</i>Quiz</button>
-  <button data-tab="score"><i>🏆</i>Score</button>
+  <button data-tab="map"><i>🫙</i><span data-t="Map">Map</span></button>
+  <button data-tab="swap"><i>🤝</i><span data-t="Swap">Swap</span></button>
+  <button data-tab="quiz"><i>❓</i><span data-t="Quiz">Quiz</span></button>
+  <button data-tab="score"><i>🏆</i><span data-t="Score">Score</span></button>
 </nav>
 
 <dialog id="ed">
   <h2 id="edTitle">Add a word</h2>
   <p class="note" id="edHint" hidden></p>
-  <label for="edWord">The word or phrase</label>
-  <div class="inrow"><input id="edWord" autocomplete="off" autocapitalize="off"><button class="ib" id="edSpeak" type="button">🔊 Hear</button></div>
-  <label for="edBranch">Where it goes on the map</label><select id="edBranch"></select>
-  <div id="edLangRow"><label for="edLang">Language</label><select id="edLang"></select></div>
+  <label for="edWord" data-t="The word or phrase">The word or phrase</label>
+  <div class="inrow"><input id="edWord" autocomplete="off" autocapitalize="off"><button class="ib" id="edSpeak" type="button" data-t="🔊 Hear">🔊 Hear</button></div>
+  <label for="edBranch" data-t="Where it goes on the map">Where it goes on the map</label><select id="edBranch"></select>
+  <div id="edLangRow"><label for="edLang" data-t="Language">Language</label><select id="edLang"></select></div>
   <label id="edLangFixed" hidden></label>
   <label for="edMean" id="edMeanLbl">What it means (English)</label>
-  <div class="inrow"><input id="edMean" autocomplete="off"><button class="ib" id="edTr" type="button">🌐 Translate</button></div>
-  <label>How rude? <span id="edRudeTxt"></span></label><div id="edRude"></div>
-  <label>Type</label><div class="chips" id="edKind" style="margin:0"></div>
-  <div id="edRecRow"><label>Native speaker saying it</label>
-  <div class="inrow"><button class="ib" id="edRec" type="button" style="flex:1">🎙️ <span>Record how it sounds</span></button><button class="ib" id="edPlayRec" type="button" hidden>▶️ Play</button></div></div>
-  <label for="edNote">When to use it (optional)</label><input id="edNote" autocomplete="off" placeholder="e.g. only with close friends">
-  <div class="act"><button class="ib warn" id="edDel" type="button" hidden>🗑️ Delete</button><button class="ib" id="edCancel" type="button">Cancel</button><button class="ib pri" id="edSave" type="button">✓ Save</button></div>
+  <div class="inrow"><input id="edMean" autocomplete="off"><button class="ib" id="edTr" type="button" data-t="🌐 Translate">🌐 Translate</button></div>
+  <label><span data-t="How rude?">How rude?</span> <span id="edRudeTxt"></span></label><div id="edRude"></div>
+  <label data-t="Type">Type</label><div class="chips" id="edKind" style="margin:0"></div>
+  <div id="edRecRow"><label data-t="Native speaker saying it">Native speaker saying it</label>
+  <div class="inrow"><button class="ib" id="edRec" type="button" style="flex:1">🎙️ <span>Record how it sounds</span></button><button class="ib" id="edPlayRec" type="button" hidden data-t="▶️ Play">▶️ Play</button></div></div>
+  <label for="edRo" data-t="Sounds like (optional)">Sounds like (optional)</label><input id="edRo" autocomplete="off" data-tp="e.g. hia" placeholder="e.g. hia">
+  <label for="edNote" data-t="When to use it (optional)">When to use it (optional)</label><input id="edNote" autocomplete="off" placeholder="e.g. only with close friends" data-tp="e.g. only with close friends">
+  <div class="act"><button class="ib warn" id="edDel" type="button" hidden data-t="🗑️ Delete">🗑️ Delete</button><button class="ib" id="edCancel" type="button" data-t="Cancel">Cancel</button><button class="ib pri" id="edSave" type="button" data-t="✓ Save">✓ Save</button></div>
 </dialog>
 
 <dialog id="cd">
   <div class="cdtop"><span id="cdFlag"></span><span id="cdLang"></span></div>
-  <div id="cdWord"></div><div id="cdRo"></div>
-  <p class="cdmean">means <b id="cdMean"></b></p>
+  <div id="cdWord"></div><div id="cdRo"><span data-t="Sounds like">Sounds like</span>: <b id="cdRoT"></b></div>
+  <p class="cdmean"><span data-t="means">means</span> <b id="cdMean"></b></p>
   <p class="note" id="cdFrom" hidden></p>
-  <button class="ib pri wide" id="cdLearn">🔓 Learn it  +10</button>
-  <button class="ib wide" id="cdPlay">🔊 Play</button>
-  <button class="ib wide" id="cdEdit">✏️ Edit</button>
+  <button class="ib pri wide" id="cdLearn" data-t="🔓 Learn it  +10">🔓 Learn it  +10</button>
+  <div id="cdPractice"><div class="cdrow"><button class="ib" id="cdPlay" data-t="🔊 Play">🔊 Play</button><button class="ib" id="cdSlow" data-t="🐢 Slow">🐢 Slow</button></div>
+  <button class="ib wide" id="cdSay" data-t="🎙️ Say it">🎙️ Say it</button><div id="cdHeard"></div></div>
+  <button class="ib wide" id="cdEdit" data-t="✏️ Edit">✏️ Edit</button>
   <button class="ib wide" id="cdNext"></button>
-  <button class="ib wide" id="cdClose">Close</button>
+  <button class="ib wide" id="cdClose" data-t="Close">Close</button>
 </dialog>
 
 <dialog id="ty">
-  <h2>Your turn!</h2>
+  <h2 data-t="Your turn!">Your turn!</h2>
   <p class="note" id="tyWho"></p>
   <div id="tyWord"></div><div id="tyMean"></div>
-  <button class="ib wide" id="tyPlay">🔊 Hear it again</button>
-  <div class="act"><button class="ib" id="tyNo">🔁 Not yet</button><button class="ib pri" id="tyYes">👍 Nailed it</button></div>
+  <button class="ib wide" id="tyPlay" data-t="🔊 Hear it again">🔊 Hear it again</button>
+  <div class="act"><button class="ib" id="tyNo" data-t="🔁 Not yet">🔁 Not yet</button><button class="ib pri" id="tyYes" data-t="👍 Nailed it">👍 Nailed it</button></div>
 </dialog>
 
 <dialog id="qr">
-  <h2>Send to your friend</h2>
+  <h2 data-t="Send to your friend">Send to your friend</h2>
   <p class="note" id="qrWho"></p>
   <div id="qrBox"></div>
-  <div class="act"><button class="ib" id="qrShare">📤 Share link</button><button class="ib pri" id="qrClose">Done</button></div>
+  <div class="act"><button class="ib" id="qrShare" data-t="📤 Share link">📤 Share link</button><button class="ib pri" id="qrClose" data-t="Done">Done</button></div>
 </dialog>
 
 <dialog id="st">
   <h2 id="stTitle">Settings</h2>
-  <div id="stIntro"><p class="note">Start with six basics, then unlock how people say them around the world. Add your own words, swap with friends and score points.</p><p class="adult">Contains rude words. For adults.</p></div>
-  <label for="stName">Your name (shown to friends you swap with)</label><input id="stName" autocomplete="off">
-  <label for="stLang">Your language</label><select id="stLang"></select>
-  <label class="sw"><input type="checkbox" id="stShare"><span class="trk"></span>Share my words to improve Speakeasy</label>
-  <p class="note" style="margin-top:8px">Off unless you switch it on. Only the word, its language, meaning and rudeness are sent. No name, no recording, nothing about you.</p>
-  <div class="act"><button class="ib warn" id="stReset" type="button">🗑️ Clear everything</button><button class="ib pri" id="stClose" type="button">Done</button></div>
+  <div id="stIntro"><p class="note" data-t="Start with six basics, then unlock how people say them around the world. Add your own words, swap with friends and score points.">Start with six basics, then unlock how people say them around the world. Add your own words, swap with friends and score points.</p><p class="adult" data-t="Contains rude words. For adults.">Contains rude words. For adults.</p></div>
+  <label for="stName" data-t="Your name (shown to friends you swap with)">Your name (shown to friends you swap with)</label><input id="stName" autocomplete="off">
+  <label for="stLang" data-t="Your language">Your language</label><select id="stLang"></select>
+  <label class="sw"><input type="checkbox" id="stShare"><span class="trk"></span><span data-t="Share my words to improve Speakeasy">Share my words to improve Speakeasy</span></label>
+  <p class="note" style="margin-top:8px" data-t="Off unless you switch it on. Only the word, its language, meaning and rudeness are sent. No name, no recording, nothing about you.">Off unless you switch it on. Only the word, its language, meaning and rudeness are sent. No name, no recording, nothing about you.</p>
+  <div class="act"><button class="ib warn" id="stReset" type="button" data-t="🗑️ Clear everything">🗑️ Clear everything</button><button class="ib pri" id="stClose" type="button">Done</button></div>
 </dialog>
 
 <div id="toast"></div><div id="bump"></div>
