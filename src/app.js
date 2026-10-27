@@ -88,19 +88,22 @@ function build(){
     root.kids.push(hn)});
   // spacing so that neighbours on a ring never overlap
   const chordR=(k,cr,arc)=>k<2?0:cr*1.08/Math.sin(arc/(2*k));
+  // long branch names wrap onto up to three short lines so pills stay narrow
+  const wrap=t=>{const out=[];let cur="";String(t).split(/\s+/).forEach(w=>{if(cur&&(cur+" "+w).length>11){out.push(cur);cur=w}else cur=cur?cur+" "+w:w});if(cur)out.push(cur);
+    if(out.length>3){out[2]=out.slice(2).join(" ");out.length=3}return out};
   root.kids.forEach(h=>{
     h.kids.forEach(v=>{const k=v.kids.length;
       // oval perimeter is about 7.82 x the short radius; only ARC of it is used
-      v.pw=Math.max(220,v.en.length*30+70);v.ring=Math.max(230,k*2*LEAF_CR*1.05/(7.82*ARC/(2*Math.PI)));v.ry=v.ring*OVAL;v.size=v.ry+LEAF_CR+24});
+      v.lines=wrap(v.en);v.pw=Math.max(220,Math.max(...v.lines.map(x=>x.length))*30+70);v.ph=v.lines.length*58+50;v.ring=Math.max(230,k*2*LEAF_CR*1.05/(7.82*ARC/(2*Math.PI)));v.ry=v.ring*OVAL;v.size=v.ry+LEAF_CR+24});
     const cr=Math.max(300,...h.kids.map(v=>v.size));
-    h.ring=Math.max(cr+HUB_R+40,chordR(h.kids.length,cr,ARC));h.size=h.ring+cr});
+    h.ring=Math.max(cr+HUB_R+40,chordR(h.kids.length,cr,ARC)/1.15);h.ry=h.ring*OVAL;h.size=h.ry+cr});
   const hs=Math.max(...root.kids.map(h=>h.size));
   root.ring=Math.max(hs+ROOT_R,chordR(root.kids.length,hs,Math.PI*2));root.size=root.ring+hs;
   const place=(n,x,y,dir)=>{n.x=x;n.y=y;n.dir=dir;NODES[n.id]=n;if(!n.kids)return;const k=n.kids.length;
-    if(n.t==="var"){
+    if((n.t==="var"||n.t==="hub")&&k>1){
       // equal steps along the oval, leaving a gap towards the parent
-      const N=400,pts=[];let L=0,px=null,py=null;
-      for(let i=0;i<=N;i++){const t=dir-ARC/2+ARC*i/N,qx=Math.cos(t)*n.ring,qy=Math.sin(t)*n.ry;if(px!==null)L+=Math.hypot(qx-px,qy-py);pts.push([qx,qy,L]);px=qx;py=qy}
+      const N=400,pts=[],ry=n.ry||n.ring;let L=0,px=null,py=null;
+      for(let i=0;i<=N;i++){const t=dir-ARC/2+ARC*i/N,qx=Math.cos(t)*n.ring,qy=Math.sin(t)*ry;if(px!==null)L+=Math.hypot(qx-px,qy-py);pts.push([qx,qy,L]);px=qx;py=qy}
       n.kids.forEach((c,i)=>{c.parent=n;const want=L*(i+.5)/k;let j=0;while(j<N&&pts[j][2]<want)j++;
         const a=Math.atan2(pts[j][1],pts[j][0]);place(c,x+pts[j][0],y+pts[j][1],a)});return}
     n.kids.forEach((c,i)=>{c.parent=n;const a=n.t==="root"?-Math.PI/2+i*2*Math.PI/k:(k===1?dir:dir-ARC/2+ARC*(i+.5)/k);
@@ -125,9 +128,9 @@ function draw(){
     N.push(`<g data-n="${l.id}" class="nleaf${lk?" lk":""}"><circle cx="${l.x.toFixed(1)}" cy="${l.y.toFixed(1)}" r="${LEAF_R}" fill="${lk?"#101024":"#1f1f3d"}" stroke="${lk?"#5a5a99":l.c}" stroke-width="${lk?2.5:4}" ${lk?'stroke-dasharray="7 5"':""}/>`+
       txt(l.x,l.y+11,LG(l.lang).f,"lf")+(lk?txt(l.x+22,l.y-17,"🔒","lq"):"")+txt(l.x,l.y+LEAF_R+20,SN(l.lang),"ln")+
       (lk?"":txt(l.x,l.y+LEAF_R+38,l.w.length>13?l.w.slice(0,12)+"…":l.w,"lw"))+`</g>`)})));
-  r.kids.forEach(h=>h.kids.forEach(v=>{const[g,a]=progress(v);const w=v.pw;
-    N.push(`<g data-n="${v.id}" class="nvar">`+lab(v,"lv",`<rect x="${-w/2}" y="-50" width="${w}" height="100" rx="50" fill="#16162a" stroke="${v.c}" stroke-width="8"/>`+
-      txt(0,2,v.en,"vt")+txt(0,36,T("{0} of {1} learned",g,a),"vp"))+`</g>`)}));
+  r.kids.forEach(h=>h.kids.forEach(v=>{const[g,a]=progress(v);const w=v.pw,hh=v.ph,top=-hh/2;
+    N.push(`<g data-n="${v.id}" class="nvar">`+lab(v,"lv",`<rect x="${-w/2}" y="${top}" width="${w}" height="${hh}" rx="${Math.min(50,hh/2)}" fill="#16162a" stroke="${v.c}" stroke-width="8"/>`+
+      v.lines.map((ln,i)=>txt(0,top+62+i*58,ln,"vt")).join("")+txt(0,top+hh-18,T("{0} of {1} learned",g,a),"vp"))+`</g>`)}));
   r.kids.forEach(h=>{const[g,a]=progress(h);
     N.push(`<g data-n="${h.id}" class="nhub"><circle cx="${h.x.toFixed(1)}" cy="${h.y.toFixed(1)}" r="${HUB_R}" fill="#16162a" stroke="${h.c}" stroke-width="22"/>`+
       lab(h,"lh",txt(0,40,h.en,"ht",`fill="${h.c}"`)+txt(0,120,g+" / "+a,"hp"))+`</g>`)});
@@ -141,14 +144,14 @@ function vp(){const r=$("map").getBoundingClientRect();return{w:r.width||360,h:(
 function applyCam(){$("world").setAttribute("transform",`translate(${CAM.x.toFixed(1)},${CAM.y.toFixed(1)}) scale(${CAM.k.toFixed(4)})`);
   const k=CAM.k,m=$("map");m.classList.toggle("z1",k>=.1);m.classList.toggle("z2",k>=.3);m.classList.toggle("z3",k>=.5);m.classList.toggle("z4",k>=.9);
   // keep hub names at least 22px and branch names at least 17px on screen
-  const sc={lh:Math.max(1,22/(150*k)),lv:Math.max(1,17/(60*k))};
+  const sc={lh:Math.max(1,22/(150*k)),lv:Math.max(1,16/(52*k))};
   for(const c in sc){const v=Math.round(sc[c]*50)/50;if(LASTS[c]===v)continue;LASTS[c]=v;
     document.querySelectorAll("#world ."+c).forEach(g=>g.setAttribute("transform",`translate(${g.dataset.x},${g.dataset.y}) scale(${v})`))}
   $("mBack").disabled=FOCUS==="root"}
 function camFor(n){const{w,h}=vp();let rx,ry;
   if(n.t==="root"){rx=ry=n.ring+HUB_R*.8}
-  else if(n.t==="hub"){rx=ry=n.size}
-  else if(n.t==="var"){rx=Math.max(n.ring+LEAF_CR+10,n.pw/2+20);ry=n.ry+LEAF_CR+30}
+  else if(n.t==="hub"){const cr=n.size-n.ry;rx=n.ring+cr;ry=n.ry+cr}
+  else if(n.t==="var"){rx=Math.max(n.ring+LEAF_CR+10,n.pw/2+40);ry=n.ry+LEAF_CR+30}
   else{rx=ry=LEAF_CR*3}
   const k=Math.min(6,w/(2*rx),h/(2*ry));return{k,x:w/2-n.x*k,y:h/2-n.y*k}}
 function flyTo(n,instant){FOCUS=n.id;const to=camFor(n),from={...CAM},t0=performance.now(),D=instant?0:520;cancelAnimationFrame(ANIM);

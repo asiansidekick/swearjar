@@ -75,7 +75,7 @@ ja:{fuck:"kuso ga!",fuckoff:"usero!",fuckyou:"fuzakenna!",wtf:"nan da yo, kore!?
 ko:{fuck:"ssibal!",fuckoff:"kkeojyeo!",fuckyou:"yeot meogeo!",wtf:"ige mwoya, ssibal?",shit:"jeonjang!",holyshit:"heol, ssibal!",bullshit:"gaesori!",bitch:"ssyangnyeon!",sob:"gaejasik!",bastard:"nappeun nom!",asshole:"gaesaekki!",idiot:"babo!",dumbass:"byeongsin!"}};
 /* how the English phrases sound, written in Thai letters, for Thai speakers learning English */
 const EN_SOUND={th:{fuck:"ฟัค!",fuckoff:"ฟัค ออฟ!",fuckyou:"ฟัค ยู!",wtf:"วอท เดอะ ฟัค?",shit:"ชิท!",holyshit:"โฮลี่ ชิท!",bullshit:"บูลชิท!",pissoff:"พิส ออฟ!",pissed:"ไอ แอม พิสท์ ออฟ",
-  bitch:"บิทช์!",sob:"ซัน ออฟ อะ บิทช์!",bastard:"บาสตาร์ด!",asshole:"แอสโฮล!",idiot:"อิเดียท!",dumbass:"ดัมแอส!"}};
+  bitch:"บิทช์!",sob:"ซัน ออฟ อะ บิทช์!",bastard:"บาสตาร์ด!",asshole:"แอสโฮล!",idiot:"อิเดียท!",dumbass:"ดัมแอส!",motherfucker:"มาเธอร์ฟัคเกอร์!",youfucker:"ยู ฟัคเกอร์!",whatthehell:"วอท เดอะ เฮล?",damn:"แดม!",shitdriving:"ชิท ไดรวิ่ง!",ohno:"โอ โน!",getlost:"เก็ท ลอสท์!",annoying:"โซ อะนอยอิ้ง!",slut:"สลัท!",whore:"ฮอร์!",sonofawhore:"ซัน ออฟ อะ ฮอร์!",youbastard:"ยู บาสตาร์ด!",scumbag:"สกัมแบ็ก!",cuntface:"คันท์ เฟซ!",dickhead:"ดิ๊กเฮด!",footface:"เฟซ ไลค์ อะ ฟุท!",crazy:"ยัวร์ เครซี่!",shameless:"เชมเลส!",coward:"คาวเวิร์ด!",foulmouth:"ฟาวล์ เมาธ์!"}};
 /* static text in the page: elements carry their English text in data-t, placeholders in data-tp */
 function applyStatic(){document.documentElement.lang=S.me.lang==="th"?"th":"en";
   document.querySelectorAll("[data-t]").forEach(e=>{e.textContent=T(e.dataset.t)});
