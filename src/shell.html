@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Swear Jar">
+<meta name="theme-color" content="#07070f">
+<title>Swear Jar</title>
+<!--ICON-->
+<style>
+:root{--bg:#07070f;--card:#16162a;--ink:#fff;--mute:#d4d4ee;--line:#3b3b66;--acc:#ffd23f;--accink:#101010;--danger:#ff6b6b;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.3 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Thai",sans-serif}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:linear-gradient(180deg,#14143a,#07070f);border-bottom:2px solid #ffd23f;padding:10px 14px;display:flex;align-items:center;gap:10px}
+h1{flex:1;margin:0;font-size:26px;font-weight:800;line-height:1.1}
+h1 span{background:linear-gradient(90deg,#ffd23f,#ff6b9d,#4cc9f0);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+#hdrPts{font-weight:800;color:#ffd23f;font-size:20px}
+button{font:inherit;color:inherit;cursor:pointer}
+.ib{border:2px solid #5a5a99;background:#1f1f3d;color:#fff;font-weight:700;border-radius:12px;padding:8px 14px;min-height:48px;touch-action:manipulation}
+.ib:active{transform:scale(.97)}
+.pri{background:#ffd23f;color:#101010;border-color:#ffd23f}
+.wide{width:100%;margin-top:10px;font-size:20px}
+main{padding:12px 14px calc(110px + env(safe-area-inset-bottom,0px))}
+.sec{color:var(--c,#fff);font-size:15px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;border-bottom:2px solid var(--c,#fff);padding-bottom:4px;margin:18px 2px 10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.chip{border:2px solid var(--c,#8a8ab5);background:transparent;color:#fff;font-weight:700;padding:8px 15px;border-radius:99px;min-height:44px}
+.chip.on{background:var(--c,#fff);color:#101010;border-color:var(--c,#fff)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.tile{border:2px solid var(--c,#8a8ab5);background:var(--card);border-radius:16px;padding:12px 8px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px}
+.th{font-size:26px;font-weight:800;line-height:1.25;word-break:break-word}
+.en{font-size:19px;font-weight:700;line-height:1.2}
+.tile small{font-size:16px;color:var(--mute)}
+.tile .from{color:#4cc9f0;font-weight:700}
+.trow{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;justify-content:center}
+.trow .ib{min-height:44px;padding:6px 10px;font-size:16px}
+.empty{color:var(--mute);text-align:center;padding:36px 10px;font-size:20px;line-height:1.5}
+.note{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;font-size:17px;color:var(--mute)}
+.bigbtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:100%;min-height:92px;margin-top:12px;font-size:24px;border-radius:18px}
+.bigbtn small{font-size:17px;font-weight:600;opacity:.85}
+#swLearnBtn{border-color:#4cc9f0}#swTeachBtn{border-color:#ff9f1c}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:6;display:grid;grid-template-columns:repeat(4,1fr);background:#0d0d22;border-top:2px solid #3b3b66;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px))}
+nav button{border:0;background:none;color:#d4d4ee;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:16px;font-weight:700;padding:6px 0;border-radius:12px}
+nav button i{font-style:normal;font-size:28px;line-height:1}
+nav button.on{background:#ffd23f;color:#101010}
+dialog{border:2px solid var(--line);border-radius:18px;background:var(--card);color:var(--ink);width:min(460px,94vw);max-height:92vh;padding:18px}
+dialog::backdrop{background:rgba(0,0,0,.6)}
+dialog h2{margin:0 0 6px;font-size:24px}
+label{display:block;font-size:17px;font-weight:700;color:var(--mute);margin:14px 0 6px}
+input,select{width:100%;font:inherit;font-size:20px;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:12px;padding:12px}
+.inrow{display:flex;gap:8px}.inrow input{flex:1;min-width:0}.inrow .ib{flex:none}
+.act{display:flex;gap:10px;justify-content:space-between;margin-top:18px;flex-wrap:wrap}
+.act .ib{flex:1;font-size:20px;min-height:54px}
+.warn{color:var(--danger);border-color:var(--danger)}
+#edRude{display:flex;gap:4px}
+.chili{border:0;background:none;font-size:34px;opacity:.25;padding:2px;filter:grayscale(1)}
+.chili.on{opacity:1;filter:none}
+#edRudeTxt{font-weight:800;color:#ff6b6b;margin-left:6px}
+.rec{background:#ff6b6b!important;border-color:#ff6b6b!important;color:#101010!important;animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.6}}
+.sw{display:flex;align-items:center;gap:12px;font-size:19px;color:#fff;font-weight:700;margin-top:16px;position:relative}
+.sw input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer}
+.trk{width:56px;height:34px;border-radius:99px;background:var(--line);position:relative;flex:none;transition:background .15s}
+.trk::after{content:"";position:absolute;top:4px;left:4px;width:26px;height:26px;border-radius:50%;background:#fff;transition:transform .15s}
+.sw input:checked+.trk{background:#ffd23f}.sw input:checked+.trk::after{transform:translateX(22px)}
+.qzq{font-size:22px;color:var(--mute);text-align:center;margin:10px 0 0}
+.qzw{font-size:44px;font-weight:800;text-align:center;margin:8px 0 0;word-break:break-word}
+.qzl{display:block;text-align:center;color:var(--mute);font-size:18px}
+.qzo{display:grid;gap:10px;margin-top:14px}
+.opt{font-size:22px;min-height:64px;text-align:center}
+.opt.right{background:#7bd88f;color:#101010;border-color:#7bd88f}
+.opt.wrong{background:#ff6b6b;color:#101010;border-color:#ff6b6b}
+.big{text-align:center;background:var(--card);border:2px solid #ffd23f;border-radius:18px;padding:16px;font-size:20px}
+.big .pts{font-size:60px;font-weight:900;color:#ffd23f;line-height:1}
+.bar{height:16px;background:#2a2a4d;border-radius:99px;overflow:hidden;margin:12px 0 6px}.bar i{display:block;height:100%;background:linear-gradient(90deg,#ffd23f,#ff6b9d)}
+.big small{color:var(--mute);font-size:16px}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
+.stats div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center;font-size:17px;color:var(--mute)}
+.stats b{display:block;font-size:32px;color:#fff}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.badge{background:var(--card);border:2px dashed var(--line);border-radius:14px;padding:10px;text-align:center;opacity:.45;display:flex;flex-direction:column;gap:2px}
+.badge span{font-size:36px;filter:grayscale(1)}.badge small{color:var(--mute);font-size:15px}
+.badge.got{opacity:1;border:2px solid #ffd23f}.badge.got span{filter:none}
+#qrBox{background:#fff;border-radius:14px;padding:10px;margin:12px auto;max-width:330px}
+#qrBox svg{display:block;width:100%;height:auto}
+#tyWord{font-size:44px;font-weight:800;text-align:center;margin:10px 0 0;word-break:break-word}
+#tyMean{text-align:center;font-size:20px;color:var(--mute)}
+#toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);background:#7bd88f;color:#101010;font-weight:800;padding:12px 18px;border-radius:14px;opacity:0;pointer-events:none;transition:.2s;z-index:20;max-width:90vw;text-align:center;font-size:18px}
+#toast.show{opacity:1;transform:translateX(-50%)}#toast.bad{background:#ff6b6b}
+#bump{position:fixed;left:50%;top:40%;transform:translate(-50%,0);font-size:34px;font-weight:900;color:#ffd23f;text-shadow:0 2px 10px #000;pointer-events:none;opacity:0;z-index:30;white-space:nowrap}
+#bump.go{animation:bump 1.4s ease-out}
+@keyframes bump{0%{opacity:0;transform:translate(-50%,20px) scale(.6)}20%{opacity:1;transform:translate(-50%,0) scale(1.1)}100%{opacity:0;transform:translate(-50%,-80px) scale(1)}}
+.adult{color:#ff6b6b;font-weight:700}
+</style>
+</head>
+<body>
+<header><h1><span>Swear Jar</span> 🫙</h1><div id="hdrPts">0 pts</div><button class="ib" id="setBtn">⚙️ Settings</button></header>
+<main>
+<section id="tab-words">
+  <button class="ib pri wide" id="addBtn">➕ Add a word</button>
+  <div class="chips" id="fchips"></div>
+  <div class="grid" id="wgrid"></div>
+</section>
+<section id="tab-swap" hidden>
+  <div class="note">Sit with a friend who speaks another language. Take turns teaching each other rude words. You both score.</div>
+  <label for="swFriendName">Friend's name</label><input id="swFriendName" placeholder="e.g. Nok" autocomplete="off">
+  <label for="swFriendLang">Friend's language</label><select id="swFriendLang"></select>
+  <p class="note" id="swNeed">Choose your friend's language to start.</p>
+  <div id="swSteps" hidden>
+    <button class="ib bigbtn" id="swLearnBtn"></button>
+    <button class="ib bigbtn" id="swTeachBtn"></button>
+    <div id="swLearned"></div><div id="swTaught"></div>
+    <button class="ib pri wide bigbtn" id="swSend" hidden></button>
+  </div>
+</section>
+<section id="tab-quiz" hidden><div id="qzBody"></div></section>
+<section id="tab-score" hidden><div id="scBody"></div></section>
+</main>
+<nav>
+  <button data-tab="words"><i>📒</i>My words</button>
+  <button data-tab="swap"><i>🤝</i>Swap</button>
+  <button data-tab="quiz"><i>❓</i>Quiz</button>
+  <button data-tab="score"><i>🏆</i>Score</button>
+</nav>
+
+<dialog id="ed">
+  <h2 id="edTitle">Add a word</h2>
+  <p class="note" id="edHint" hidden></p>
+  <label for="edWord">The word or phrase</label>
+  <div class="inrow"><input id="edWord" autocomplete="off" autocapitalize="off"><button class="ib" id="edSpeak" type="button">🔊 Hear</button></div>
+  <div id="edLangRow"><label for="edLang">Language</label><select id="edLang"></select></div>
+  <label id="edLangFixed" hidden></label>
+  <label for="edMean">What it means (English)</label>
+  <div class="inrow"><input id="edMean" autocomplete="off"><button class="ib" id="edTr" type="button">🌐 Translate</button></div>
+  <label>How rude? <span id="edRudeTxt"></span></label><div id="edRude"></div>
+  <label>Type</label><div class="chips" id="edKind" style="margin:0"></div>
+  <div id="edRecRow"><label>Native speaker saying it</label>
+  <div class="inrow"><button class="ib" id="edRec" type="button" style="flex:1">🎙️ <span>Record how it sounds</span></button><button class="ib" id="edPlayRec" type="button" hidden>▶️ Play</button></div></div>
+  <label for="edNote">When to use it (optional)</label><input id="edNote" autocomplete="off" placeholder="e.g. only with close friends">
+  <div class="act"><button class="ib warn" id="edDel" type="button" hidden>🗑️ Delete</button><button class="ib" id="edCancel" type="button">Cancel</button><button class="ib pri" id="edSave" type="button">✓ Save</button></div>
+</dialog>
+
+<dialog id="ty">
+  <h2>Your turn!</h2>
+  <p class="note" id="tyWho"></p>
+  <div id="tyWord"></div><div id="tyMean"></div>
+  <button class="ib wide" id="tyPlay">🔊 Hear it again</button>
+  <div class="act"><button class="ib" id="tyNo">🔁 Not yet</button><button class="ib pri" id="tyYes">👍 Nailed it</button></div>
+</dialog>
+
+<dialog id="qr">
+  <h2>Send to your friend</h2>
+  <p class="note" id="qrWho"></p>
+  <div id="qrBox"></div>
+  <div class="act"><button class="ib" id="qrShare">📤 Share link</button><button class="ib pri" id="qrClose">Done</button></div>
+</dialog>
+
+<dialog id="st">
+  <h2 id="stTitle">Settings</h2>
+  <div id="stIntro"><p class="note">Collect slang, swear words and insults from every language. Swap them with friends and score points.</p><p class="adult">Contains rude words. For adults.</p></div>
+  <label for="stName">Your name (shown to friends you swap with)</label><input id="stName" autocomplete="off">
+  <label for="stLang">Your language</label><select id="stLang"></select>
+  <label class="sw"><input type="checkbox" id="stShare"><span class="trk"></span>Share my words to improve Speakeasy</label>
+  <p class="note" style="margin-top:8px">Off unless you switch it on. Only the word, its language, meaning and rudeness are sent. No name, no recording, nothing about you.</p>
+  <div class="act"><button class="ib warn" id="stReset" type="button">🗑️ Clear everything</button><button class="ib pri" id="stClose" type="button">Done</button></div>
+</dialog>
+
+<div id="toast"></div><div id="bump"></div>
+<script>
+<!--QR-->
+</script>
+<script>
+<!--APP-->
+</script>
+</body>
+</html>
