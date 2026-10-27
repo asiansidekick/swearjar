@@ -93,29 +93,66 @@ input,select{width:100%;font:inherit;font-size:20px;color:var(--ink);background:
 #bump.go{animation:bump 1.4s ease-out}
 @keyframes bump{0%{opacity:0;transform:translate(-50%,20px) scale(.6)}20%{opacity:1;transform:translate(-50%,0) scale(1.1)}100%{opacity:0;transform:translate(-50%,-80px) scale(1)}}
 .adult{color:#ff6b6b;font-weight:700}
-/* map */
-#map{position:fixed;left:0;right:0;top:var(--hh,70px);bottom:var(--nh,80px);touch-action:none;overflow:hidden;background:radial-gradient(circle at 50% 45%,#16163a,#07070f 70%);user-select:none;-webkit-user-select:none}
-#map svg{display:block}
-#map text{text-anchor:middle;font-weight:800;paint-order:stroke;stroke:#07070f;stroke-linejoin:round;fill:#fff;pointer-events:none}
-#map [data-n]{cursor:pointer}
-.rt1{font-size:190px;stroke-width:0}.rt2{font-size:96px;fill:#ffd23f!important;stroke-width:10px}
-.ht{font-size:150px;stroke-width:14px}.hp{font-size:60px;fill:#d4d4ee!important;stroke-width:8px}
-.vt{font-size:52px;stroke-width:8px}.vp{font-size:24px;fill:#d4d4ee!important;stroke-width:4px}
-.lab.lv{display:none}
-.lf{font-size:30px;stroke-width:0;display:none}.lq{font-size:15px;stroke-width:0;display:none}
-.ln{font-size:18px;stroke-width:4px;fill:#d4d4ee!important;display:none}.lw{font-size:15px;stroke-width:4px;fill:#ffd23f!important;display:none}
-.lk .lf{opacity:.45}
-#map.z1 .lab.lv{display:inline}
-#map.z2 .lf,#map.z2 .lq{display:inline}
-#map.z3 .ln{display:inline}
-#map.z4 .lw{display:inline}
-#map:not(.z2) .nleaf circle,#map:not(.z2) .nadd circle{stroke-width:12}
-#mbar{position:fixed;left:10px;right:10px;bottom:calc(var(--nh,80px) + 10px);display:flex;gap:8px;z-index:4}
-#mbar .ib{flex:1;font-size:17px;min-height:52px;padding:6px 8px;box-shadow:0 3px 10px rgba(0,0,0,.5)}
-#mbar .ib:disabled{opacity:.4}
-#mhint{position:fixed;left:0;right:0;top:calc(var(--hh,70px) + 8px);text-align:center;color:#d4d4ee;font-size:15px;pointer-events:none;z-index:3;text-shadow:0 1px 4px #000}
+/* the jar: a 3D dictionary you fly through */
+#jar{position:fixed;left:0;right:0;top:var(--hh,70px);bottom:var(--nh,80px);overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;
+  perspective:900px;perspective-origin:50% 46%;background:radial-gradient(ellipse at 50% 46%,#1a1a44,#07070f 72%)}
+#jar::before{content:"";position:absolute;inset:0;background-image:radial-gradient(1px 1px at 20% 30%,#fff8,transparent),radial-gradient(1px 1px at 70% 60%,#fff6,transparent),radial-gradient(1.5px 1.5px at 40% 80%,#fff7,transparent),radial-gradient(1px 1px at 85% 20%,#fff8,transparent),radial-gradient(1px 1px at 10% 70%,#fff6,transparent)}
+#jw{position:absolute;left:50%;top:46%;width:0;height:0;transform-style:preserve-3d}
+.je{position:absolute;left:0;top:0;transform-style:preserve-3d;text-align:center;font-weight:900;line-height:1.08;will-change:transform,opacity;display:none}
+.je.ent{background:rgba(14,14,36,.9);border:7px solid var(--c);border-radius:44px;padding:.18em .3em .25em;box-shadow:0 30px 80px rgba(0,0,0,.7)}
+.je .hw{display:block;color:#fff;overflow-wrap:anywhere}
+.je .mn{display:block;font-size:.4em;font-weight:700;color:#e8e8ff;margin-top:.25em;line-height:1.2}
+.je .lg{font-size:.7em;font-weight:700;color:#b9b9e0}
+.chap{color:var(--c);opacity:.9;letter-spacing:.04em;text-transform:uppercase;font-size:200px;text-shadow:0 0 60px var(--c)}
+.chap small{display:block;font-size:.3em;color:#e8e8ff;letter-spacing:.1em}
+/* a word's look tells its state: grey = not in your jar yet, gold = saved, green tick = checked, mic = recorded */
+.wd{display:inline-block;position:relative;border-radius:.18em;padding:0 .12em;color:#a9a9d6;cursor:pointer}
+.wd.sv{color:#ffd23f;text-shadow:0 0 .35em rgba(255,210,63,.45)}
+.wd .bd{font-size:.32em;vertical-align:.9em;margin-left:.1em;white-space:nowrap}
+.wd .ok{display:inline-block;background:#7bd88f;color:#07070f;border-radius:99px;padding:0 .3em;font-weight:900}
+.wd .mc{display:inline-block;background:#4cc9f0;color:#07070f;border-radius:99px;padding:0 .25em}
+.wd.rc{box-shadow:0 0 0 .05em #4cc9f0,0 0 .5em rgba(76,201,240,.55)}
+.wd.vf{text-decoration:underline .06em #7bd88f;text-underline-offset:.12em}
+.wd.ghost{color:#8a8ab5;font-size:.45em;border:.05em dashed #5a5a99;padding:.1em .4em;font-weight:700}
+.al{display:grid;gap:.2em .6em;margin-top:.3em;font-size:.44em;text-align:left;line-height:1.15}
+.al .r{display:flex;gap:.35em;align-items:baseline}.al .r .f{flex:none}
+#jtop{position:fixed;left:8px;right:8px;top:calc(var(--hh,70px) + 6px);z-index:4;display:flex;gap:8px;align-items:center}
+#jLang{flex:1;min-width:0;font-weight:800;font-size:19px;background:#1f1f3d;border:2px solid #5a5a99;border-radius:14px;padding:8px 10px;min-height:52px}
+#jtop .ib{min-height:52px;font-size:18px;padding:6px 12px;box-shadow:0 3px 10px rgba(0,0,0,.5)}
+#jSet,#jPts{display:none}
+#jkey{position:fixed;left:0;right:0;top:calc(var(--hh,70px) + 64px);z-index:3;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 12px;font-size:15px;color:#d4d4ee;pointer-events:none;text-shadow:0 1px 4px #000;padding:0 8px}
+#jkey b{color:#ffd23f}#jkey i{font-style:normal;color:#8a8ab5}#jkey .ok{background:#7bd88f;color:#07070f;border-radius:99px;padding:0 6px;font-weight:900}#jkey .mc{background:#4cc9f0;color:#07070f;border-radius:99px;padding:0 5px}
+#jbar{position:fixed;left:8px;right:8px;bottom:calc(var(--nh,80px) + 8px);z-index:4;display:flex;gap:8px}
+#jIn{flex:1;min-width:0;border:2px solid #ffd23f;background:rgba(13,13,34,.92);font-weight:700;font-size:22px;min-height:56px}
+#jbar .ib{min-height:56px;font-size:20px;padding:6px 12px;box-shadow:0 3px 10px rgba(0,0,0,.5)}
+#jhint{position:fixed;left:0;right:0;bottom:calc(var(--nh,80px) + 74px);text-align:center;color:#d4d4ee;font-size:16px;pointer-events:none;z-index:3;text-shadow:0 1px 4px #000}
+#jres{position:fixed;left:8px;right:8px;bottom:calc(var(--nh,80px) + 72px);z-index:5;border:2px solid #ffd23f;border-radius:20px;background:rgba(22,22,42,.96);padding:12px;text-align:center;max-height:calc(100% - var(--hh,70px) - var(--nh,80px) - 90px);overflow:auto}
+#jrW{font-size:54px;font-weight:900;color:#ffd23f;line-height:1.1;overflow-wrap:anywhere}
+#jrRo{font-size:21px;color:#d4d4ee;font-style:italic}#jrMean{font-size:21px;margin-top:4px}#jrMean b{color:#fff}
+#jrX{position:absolute;right:8px;top:8px;min-height:44px;width:44px;padding:0}
+.jrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.jrow .ib{padding:6px 4px;font-size:20px}
+#jrSave{width:100%;margin-top:10px;font-size:22px;min-height:60px}
 body.onmap main{padding:0}
-body.onmap #toast{bottom:calc(var(--nh,80px) + 76px)}
+body.onmap #toast{bottom:auto;top:calc(var(--hh,70px) + 70px)}
+#cdState{text-align:center;font-size:18px;font-weight:700;margin:4px 0}#cdState .ok{color:#7bd88f}#cdState .mc{color:#4cc9f0}#cdState .sv{color:#ffd23f}#cdState .no{color:#a9a9d6}
+/* turned sideways: the jar gets the whole screen */
+@media (orientation:landscape) and (max-height:520px){
+  body.onmap header{display:none}
+  body.onmap nav{padding:2px 6px calc(2px + env(safe-area-inset-bottom,0px))}
+  body.onmap nav button{flex-direction:row;justify-content:center;gap:8px;padding:2px 0;font-size:16px}
+  body.onmap nav button i{font-size:22px}
+  #jSet,#jPts{display:block}#jPts{color:#ffd23f;font-weight:800;font-size:19px;white-space:nowrap;text-shadow:0 1px 4px #000}
+  #jtop{left:calc(8px + env(safe-area-inset-left,0px));right:calc(8px + env(safe-area-inset-right,0px))}
+  #jLang{flex:0 1 300px}#jtop .sp{flex:1}
+  #jkey{top:auto;bottom:calc(var(--nh,50px) + 70px);justify-content:flex-start;font-size:14px;left:calc(8px + env(safe-area-inset-left,0px))}
+  #jhint{display:none}
+  body.onmap #toast{top:auto;bottom:calc(var(--nh,50px) + 76px)}
+  .jrow{grid-template-columns:repeat(4,1fr)}.jrow .ib{min-height:48px;font-size:18px}
+  #jrSave{min-height:52px;margin-top:8px}#jrRo,#jrMean{display:inline;font-size:19px}#jrMean::before{content:" · "}
+  #jbar{left:calc(8px + env(safe-area-inset-left,0px));right:calc(8px + env(safe-area-inset-right,0px))}
+  #jres{left:auto;right:calc(8px + env(safe-area-inset-right,0px));width:min(520px,62vw);top:8px;bottom:calc(var(--nh,50px) + 72px);max-height:none;padding:8px 12px}
+  #jrW{font-size:46px}
+}
 #cd .cdtop{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:800}
 #cdFlag{font-size:44px}
 #cdWord{font-size:48px;font-weight:900;text-align:center;margin:14px 0 4px;word-break:break-word;color:#ffd23f}
@@ -134,9 +171,17 @@ optgroup{font-weight:800}
 <header><h1><span>Swear Jar</span> 🫙</h1><div id="hdrPts">0 pts</div><button class="ib" id="setBtn" data-t="⚙️ Settings">⚙️ Settings</button></header>
 <main>
 <section id="tab-map">
-  <div id="map"><svg width="100%" height="100%"><g id="world"></g></svg></div>
-  <div id="mbar"><button class="ib" id="mBack" data-t="⬅ Back">⬅ Back</button><button class="ib" id="mHome" data-t="🫙 Whole map">🫙 Whole map</button><button class="ib pri" id="mAdd" data-t="➕ Add a word">➕ Add a word</button></div>
-  <div id="mhint" data-t="Tap a bubble to zoom in · pinch or drag to explore">Tap a bubble to zoom in · pinch or drag to explore</div>
+  <div id="jar"><div id="jw"></div></div>
+  <div id="jtop"><select id="jLang" aria-label="Show words in"></select><span class="sp"></span><button class="ib" id="jAdd" data-t="➕ Add">➕ Add</button><button class="ib" id="jBack" data-t="⬅ Back">⬅ Back</button><span id="jPts"></span><button class="ib" id="jSet" aria-label="Settings">⚙️</button></div>
+  <div id="jkey"></div>
+  <div id="jhint" data-t="Drag up to fly in · tap a word to hear it">Drag up to fly in · tap a word to hear it</div>
+  <div id="jres" hidden>
+    <button class="ib" id="jrX" aria-label="Close">✕</button>
+    <div id="jrLang"></div><div id="jrW"></div><div id="jrRo"></div><div id="jrMean"></div>
+    <div class="jrow"><button class="ib" id="jrPlay" data-t="🔊 Play">🔊 Play</button><button class="ib" id="jrSlow" data-t="🐢 Slow">🐢 Slow</button><button class="ib" id="jrRec">⏺️ <span>Record</span></button><button class="ib" id="jrEdit" data-t="✏️ Edit">✏️ Edit</button></div>
+    <button class="ib pri" id="jrSave" data-t="🫙 Save to jar  +10">🫙 Save to jar  +10</button>
+  </div>
+  <form id="jbar" autocomplete="off"><input id="jIn" type="search" enterkeyhint="search" autocapitalize="off" data-tp="Type a word…" placeholder="Type a word…"><button class="ib" id="jMic" type="button" aria-label="Speak">🎙️</button><button class="ib pri" id="jGo" type="submit" data-t="Go">Go</button></form>
 </section>
 <section id="tab-swap" hidden>
   <div class="note" data-t="Sit with a friend who speaks another language. Take turns teaching each other rude words. You both score.">Sit with a friend who speaks another language. Take turns teaching each other rude words. You both score.</div>
@@ -154,7 +199,7 @@ optgroup{font-weight:800}
 <section id="tab-score" hidden><div id="scBody"></div></section>
 </main>
 <nav>
-  <button data-tab="map"><i>🫙</i><span data-t="Map">Map</span></button>
+  <button data-tab="map"><i>🫙</i><span data-t="Jar">Jar</span></button>
   <button data-tab="swap"><i>🤝</i><span data-t="Swap">Swap</span></button>
   <button data-tab="quiz"><i>❓</i><span data-t="Quiz">Quiz</span></button>
   <button data-tab="score"><i>🏆</i><span data-t="Score">Score</span></button>
@@ -165,7 +210,7 @@ optgroup{font-weight:800}
   <p class="note" id="edHint" hidden></p>
   <label for="edWord" data-t="The word or phrase">The word or phrase</label>
   <div class="inrow"><input id="edWord" autocomplete="off" autocapitalize="off"><button class="ib" id="edSpeak" type="button" data-t="🔊 Hear">🔊 Hear</button></div>
-  <label for="edBranch" data-t="Where it goes on the map">Where it goes on the map</label><select id="edBranch"></select>
+  <label for="edBranch" data-t="Where it goes in the jar">Where it goes in the jar</label><select id="edBranch"></select>
   <div id="edLangRow"><label for="edLang" data-t="Language">Language</label><select id="edLang"></select></div>
   <label id="edLangFixed" hidden></label>
   <label for="edMean" id="edMeanLbl">What it means (English)</label>
@@ -183,10 +228,11 @@ optgroup{font-weight:800}
   <div class="cdtop"><span id="cdFlag"></span><span id="cdLang"></span></div>
   <div id="cdWord"></div><div id="cdRo"><span data-t="Sounds like">Sounds like</span>: <b id="cdRoT"></b></div>
   <p class="cdmean"><span data-t="means">means</span> <b id="cdMean"></b></p>
+  <div id="cdState"></div>
   <p class="note" id="cdFrom" hidden></p>
-  <button class="ib pri wide" id="cdLearn" data-t="🔓 Learn it  +10">🔓 Learn it  +10</button>
+  <button class="ib pri wide" id="cdLearn" data-t="🫙 Save to jar  +10">🫙 Save to jar  +10</button>
   <div id="cdPractice"><div class="cdrow"><button class="ib" id="cdPlay" data-t="🔊 Play">🔊 Play</button><button class="ib" id="cdSlow" data-t="🐢 Slow">🐢 Slow</button></div>
-  <button class="ib wide" id="cdSay" data-t="🎙️ Say it">🎙️ Say it</button><div id="cdHeard"></div></div>
+  <div class="cdrow"><button class="ib" id="cdSay" data-t="🎙️ Say it">🎙️ Say it</button><button class="ib" id="cdRec">⏺️ <span>Record</span></button></div><div id="cdHeard"></div></div>
   <button class="ib wide" id="cdEdit" data-t="✏️ Edit">✏️ Edit</button>
   <button class="ib wide" id="cdNext"></button>
   <button class="ib wide" id="cdClose" data-t="Close">Close</button>

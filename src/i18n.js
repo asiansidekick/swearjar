@@ -9,10 +9,10 @@ const TH={
 "Choose their language":"เลือกภาษาของเพื่อน","Your friend":"เพื่อน","your friend":"เพื่อน",
 "{0} teaches me":"{0} สอนฉัน","a word in {0}":"คำภาษา{0}","I teach {0}":"ฉันสอน {0}",
 "Learned this swap":"เรียนรอบนี้","Taught this swap":"สอนรอบนี้","📲 Send {0} words to {1}":"📲 ส่ง {0} คำให้ {1}",
-"Hand the phone to {0}. They type a word, pick where it goes on the map, and record themselves saying it.":"ส่งโทรศัพท์ให้{0} ให้เขาพิมพ์คำ เลือกตำแหน่งในแผนที่ แล้วอัดเสียงตัวเองพูด",
+"Hand the phone to {0}. They type a word, pick where it goes in the jar, and record themselves saying it.":"ส่งโทรศัพท์ให้{0} ให้เขาพิมพ์คำ เลือกตำแหน่งในโหล แล้วอัดเสียงตัวเองพูด",
 "Teach {0} a word":"สอนคำให้{0}","Type a word in your language. It goes to your friend's phone when you tap Send.":"พิมพ์คำในภาษาของคุณ คำจะไปที่โทรศัพท์เพื่อนเมื่อกดส่ง",
 "{0} teaches you":"{0} สอนคุณ","Now you say it. {0} decides if you nailed it.":"ตาคุณพูดแล้ว {0} จะตัดสินว่าพูดถูกไหม",
-"Add a word":"เพิ่มคำ","Edit word":"แก้ไขคำ","The word or phrase":"คำหรือวลี","🔊 Hear":"🔊 ฟัง","Where it goes on the map":"อยู่ตรงไหนในแผนที่",
+"Add a word":"เพิ่มคำ","Edit word":"แก้ไขคำ","The word or phrase":"คำหรือวลี","🔊 Hear":"🔊 ฟัง","Where it goes on the map":"อยู่ตรงไหนในโหล",
 "Language":"ภาษา","Language: {0}":"ภาษา: {0}","What it means":"ความหมาย","🌐 Translate":"🌐 แปล","Translating…":"กำลังแปล…",
 "What it means (this names the new branch)":"ความหมาย (ใช้ตั้งชื่อกิ่งใหม่)","What it means (optional)":"ความหมาย (ไม่บังคับ)",
 "Sounds like (optional)":"อ่านว่า (ไม่บังคับ)","e.g. hia":"เช่น ฟัค",
@@ -38,28 +38,28 @@ const TH={
 "🗑️ Clear everything":"🗑️ ลบทั้งหมด","Let's go":"เริ่มเลย","Choose your language":"เลือกภาษาของคุณ",
 "{0} of {1} learned":"เรียนแล้ว {0} จาก {1}",
 "What does this mean?":"คำนี้แปลว่าอะไร?","🔊 Play it":"🔊 ฟัง","Next word ➜":"คำถัดไป ➜","It means: {0}":"แปลว่า: {0}","right answer":"ตอบถูก",
-"Learn at least 4 foreign words on the map to play.":"เรียนคำต่างภาษาในแผนที่อย่างน้อย 4 คำเพื่อเล่น","You have {0}.":"ตอนนี้มี {0}",
-"Tap a 🔒 word on the map to learn it.":"แตะคำที่มี 🔒 ในแผนที่เพื่อเรียน",
+"Learn at least 4 foreign words in the jar to play.":"เรียนคำต่างภาษาในโหลอย่างน้อย 4 คำเพื่อเล่น","You have {0}.":"ตอนนี้มี {0}",
+"Tap a 🔒 word in the jar to learn it.":"แตะคำที่มี 🔒 ในโหลเพื่อเรียน",
 "Learn foreign words on at least 4 different branches to play (like Fuck off! or Bullshit!).":"เรียนคำต่างภาษาจากอย่างน้อย 4 กิ่งเพื่อเล่น (เช่น ไสหัวไปเลย! หรือ ตอแหล!)",
 "points · Level {0}":"คะแนน · เลเวล {0}","{0} points to level {1}":"อีก {0} คะแนนถึงเลเวล {1}","words learned":"คำที่เรียนแล้ว","foreign languages":"ภาษาต่างประเทศ",
 "swaps":"ครั้งที่แลกคำ","quiz right":"ทายถูก","Your jar":"โหลของคุณ","Badges ({0} of {1})":"เหรียญ ({0} จาก {1})","How to score":"วิธีได้คะแนน",
-"Learn a word on the map: {0} · Add a word: {1} · Add a new language to a branch: +{2} more · Start a new branch: +{3} more · Learn from a friend: {4} · Teach a friend: {5} · Say it right: {6} · Quiz answer right: {7}":
-"เรียนคำในแผนที่: {0} · เพิ่มคำ: {1} · เพิ่มภาษาใหม่ให้กิ่ง: +{2} · สร้างกิ่งใหม่: +{3} · เรียนจากเพื่อน: {4} · สอนเพื่อน: {5} · พูดถูก: {6} · ทายถูก: {7}",
+"Learn a word in the jar: {0} · Add a word: {1} · Add a new language to a branch: +{2} more · Start a new branch: +{3} more · Learn from a friend: {4} · Teach a friend: {5} · Say it right: {6} · Quiz answer right: {7}":
+"เรียนคำในโหล: {0} · เพิ่มคำ: {1} · เพิ่มภาษาใหม่ให้กิ่ง: +{2} · สร้างกิ่งใหม่: +{3} · เรียนจากเพื่อน: {4} · สอนเพื่อน: {5} · พูดถูก: {6} · ทายถูก: {7}",
 "First word":"คำแรก","Learn or add your first word":"เรียนหรือเพิ่มคำแรก","Potty mouth":"ปากหมา","10 words learned":"เรียนแล้ว 10 คำ","Walking dictionary":"พจนานุกรมเดินได้","50 words learned":"เรียนแล้ว 50 คำ",
 "World traveller":"นักเดินทาง","Words in 3 foreign languages":"คำจาก 3 ภาษาต่างประเทศ","Globetrotter":"ท่องโลก","Words in 6 foreign languages":"คำจาก 6 ภาษาต่างประเทศ",
 "Full set":"ครบชุด","Learn every language on one branch":"เรียนครบทุกภาษาในกิ่งเดียว","Map maker":"นักทำแผนที่","Add a new language to a branch":"เพิ่มภาษาใหม่ให้กิ่ง",
 "Tree grower":"นักปลูกต้นไม้","Start a new branch":"สร้างกิ่งใหม่","First swap":"แลกคำครั้งแรก","Swap words with a friend":"แลกคำกับเพื่อน",
 "Bad influence":"เพื่อนพาเสีย","10 words learned from friends":"เรียนจากเพื่อน 10 คำ","Voice of the people":"เสียงประชาชน","Record 5 words":"อัดเสียง 5 คำ",
 "Quiz shark":"เซียนทายคำ","10 quiz answers right":"ทายถูก 10 ครั้ง","Regular":"ขาประจำ","Play on 3 different days":"เล่น 3 วัน","Say it right 5 times":"พูดถูก 5 ครั้ง","Smooth talker":"ปากดี",
-"🏅 Badge: {0}":"🏅 ได้เหรียญ: {0}","learned {0}":"เรียน{0}","new word":"คำใหม่","learned a word":"เรียนคำใหม่","taught a word":"สอนคำ","new branch!":"กิ่งใหม่!","new language on the map!":"ภาษาใหม่ในแผนที่!",
+"🏅 Badge: {0}":"🏅 ได้เหรียญ: {0}","learned {0}":"เรียน{0}","new word":"คำใหม่","learned a word":"เรียนคำใหม่","taught a word":"สอนคำ","new branch!":"กิ่งใหม่!","new language in the jar!":"ภาษาใหม่ในโหล!",
 "nailed it":"พูดเป๊ะ","{0} words from {1}":"{0} คำจาก {1}","a friend":"เพื่อน",
-"Type the word first":"พิมพ์คำก่อน","Type what it means: that names the new branch":"พิมพ์ความหมาย เพื่อใช้ตั้งชื่อกิ่งใหม่","Already on your map":"มีในแผนที่แล้ว",
+"Type the word first":"พิมพ์คำก่อน","Type what it means: that names the new branch":"พิมพ์ความหมาย เพื่อใช้ตั้งชื่อกิ่งใหม่","Already on your map":"มีในโหลแล้ว",
 "✓ Saved":"✓ บันทึกแล้ว","✓ Recorded":"✓ อัดแล้ว","Nothing heard, try again":"ไม่ได้ยินเสียง ลองใหม่","Deleted":"ลบแล้ว","Delete “{0}”?":"ลบ “{0}”?",
 "Check it: slang often translates wrong":"ตรวจดูด้วย คำสแลงมักแปลผิด","No translation found":"ไม่พบคำแปล","No internet":"ไม่มีอินเทอร์เน็ต",
 "This phone can't speak that language":"โทรศัพท์นี้พูดภาษานั้นไม่ได้","Recording isn't available on this phone":"โทรศัพท์นี้อัดเสียงไม่ได้","Allow the microphone to record":"อนุญาตไมโครโฟนเพื่ออัดเสียง",
 "✓ Link copied":"✓ คัดลอกลิงก์แล้ว","Copy this link":"คัดลอกลิงก์นี้","That link is broken":"ลิงก์นี้เสีย","You already have those words":"คุณมีคำพวกนี้แล้ว",
 "Keep practising!":"ฝึกต่อไป!","Everything cleared":"ลบทั้งหมดแล้ว","Delete ALL your words, points and badges?":"ลบคำ คะแนน และเหรียญทั้งหมด?",
-"✓ Thanks! Your words help Speakeasy":"✓ ขอบคุณ! คำของคุณช่วย Speakeasy","Words from {0}":"คำจาก {0}"};
+"✓ Thanks! Your words help Speakeasy":"✓ ขอบคุณ! คำของคุณช่วย Speakeasy","Words from {0}":"คำจาก {0}","Jar":"โหล","➕ Add":"➕ เพิ่ม","🫙 Save to jar  +10":"🫙 เก็บใส่โหล +10","Where it goes in the jar":"ใส่ไว้ตรงไหนในโหล","⬅ Back":"⬅ ย้อน","Drag up to fly in · tap a word to hear it":"ลากขึ้นเพื่อบินเข้าไป · แตะคำเพื่อฟัง","Type a word…":"พิมพ์คำ…","Go":"ไป","Record":"อัดเสียง","{0} of {1} saved":"เก็บแล้ว {0} จาก {1}","➕ Add the {0} word":"➕ เพิ่มคำภาษา{0}","gold":"สีทอง","in your jar":"อยู่ในโหลแล้ว","grey":"สีเทา","not saved yet":"ยังไม่ได้เก็บ","checked":"ตรวจแล้ว","recorded":"อัดเสียงแล้ว","🌐 Every language":"🌐 ทุกภาษา","Show: {0}":"แสดง: {0}","In your jar":"อยู่ในโหลแล้ว","Not in your jar yet":"ยังไม่อยู่ในโหล","Taught by a native speaker":"เจ้าของภาษาสอน","Checked in dictionaries":"ตรวจกับพจนานุกรมแล้ว","Recorded":"อัดเสียงแล้ว","Already in your jar":"มีในโหลแล้ว","…":"…","Slang":"สแลง","Casual talk":"ภาษาพูด","My words":"คำของฉัน"};
 const UI_LANGS={th:TH};
 function T(s,...a){const d=S&&S.me&&UI_LANGS[S.me.lang];let r=d&&d[s]||s;a.forEach((x,i)=>{r=r.split("{"+i+"}").join(x)});return r}
 /* language names in the player's language */
@@ -68,7 +68,7 @@ const LN_TH={en:"อังกฤษ",th:"ไทย",vi:"เวียดนาม
   yue:"กวางตุ้ง",nl:"ดัตช์",sv:"สวีเดน",tr:"ตุรกี",pl:"โปแลนด์",uk:"ยูเครน",he:"ฮีบรู",el:"กรีก",hu:"ฮังการี",cs:"เช็ก",ro:"โรมาเนีย"};
 const LN_TH_SHORT={es:"เม็กซิกัน",esp:"สเปน",esa:"อาร์เจนตินา",zh:"จีนกลาง",zt:"ไต้หวัน"};
 /* the six basics named in the player's language (otherwise the first built-in phrase is used) */
-const HUBN={th:{fuck:"เหี้ย",shit:"ขี้",piss:"ฉี่",bitch:"อีดอก",bastard:"ไอ้เลว",idiot:"ไอ้โง่"}};
+const HUBN={th:{fuck:"เหี้ย",shit:"ขี้",piss:"ฉี่",bitch:"อีดอก",bastard:"ไอ้เลว",idiot:"ไอ้โง่",slang:"สแลง",casual:"ภาษาพูด",mine:"คำของฉัน"}};
 /* sounds-like lines missing from the Speakeasy tables */
 const RO={
 ja:{fuck:"kuso ga!",fuckoff:"usero!",fuckyou:"fuzakenna!",wtf:"nan da yo, kore!?",shit:"kusso!",holyshit:"maji ka yo!",bullshit:"uso tsuke!",bitch:"kuso onna!",sob:"kusottare!",bastard:"kono yarō!",asshole:"kuso yarō!",idiot:"baka!",dumbass:"aho!"},

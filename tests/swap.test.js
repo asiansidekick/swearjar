@@ -5,7 +5,7 @@ await p.goto('http://localhost:8765/');await p.waitForTimeout(500);
 await p.screenshot({path:'s1-welcome.png'});
 await p.fill('#stName','Phil');await p.selectOption('#stLang','en');await p.click('#stClose');
 // add words
-const add=async(w,m,lang,r)=>{await p.click('#addBtn');await p.fill('#edWord',w);await p.selectOption('#edLang',lang);await p.fill('#edMean',m);await p.click(`#edRude [data-r="${r}"]`);await p.click('#edSave');await p.waitForTimeout(200)};
+const add=async(w,m,lang,r)=>{await p.click('#jAdd');await p.fill('#edWord',w);await p.selectOption('#edLang',lang);await p.fill('#edMean',m);await p.click(`#edRude [data-r="${r}"]`);await p.click('#edSave');await p.waitForTimeout(200)};
 await add('wanker','idiot (British)','en',4);await add('bloody hell','damn it','en',2);await add('cheeky bugger','rascal','en',2);await add('arse','backside','en',3);
 await p.waitForTimeout(1500);await p.screenshot({path:'s2-words.png'});
 // swap
@@ -18,6 +18,7 @@ await p.screenshot({path:'s5-swap.png',fullPage:true});
 await p.click('#swSend');await p.waitForTimeout(300);await p.screenshot({path:'s6-qr.png'});
 const url=await p.$eval('#qr',d=>d.dataset.url);await p.click('#qrClose');
 // quiz
+await p.evaluate(()=>{['fuck|th','shit|ja','idiot|fr','bitch|ko'].forEach(k=>S.learned[k]=1);save()});
 await p.click('nav [data-tab=quiz]');await p.screenshot({path:'s7-quiz.png'});await p.click('#qzBody .opt');await p.waitForTimeout(300);await p.screenshot({path:'s7b-quiz.png'});
 await p.click('nav [data-tab=score]');await p.screenshot({path:'s8-score.png',fullPage:true});
 const st=await p.evaluate(()=>JSON.parse(localStorage.getItem('swearjar.v1')));
