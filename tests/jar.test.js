@@ -29,7 +29,7 @@ console.log('verified look',await p.$eval('[data-l="l:motherfucker|th"]',e=>e.cl
 // type a word that's in the jar
 await p.fill('#jIn','scumbag');await p.press('#jIn','Enter');await p.waitForTimeout(1800);console.log('found',await p.evaluate(()=>[cd.open,cdWord.textContent]));await p.click('#cdClose');
 // type a new word: translate, record, save
-await p.fill('#jIn','loser');await p.press('#jIn','Enter');await p.waitForTimeout(600);await p.screenshot({path:'j5-new.png'});
+await p.fill('#jIn','show-off');await p.press('#jIn','Enter');await p.waitForTimeout(600);await p.screenshot({path:'j5-new.png'});
 await p.click('#jrRec');await p.waitForTimeout(100);await p.click('#jrRec');await p.click('#jrSave');await p.waitForTimeout(1800);
 console.log('new word',await p.evaluate(()=>S.words.filter(w=>w.var.startsWith('v')).map(w=>[w.w,w.lang,w.mean,!!w.aud])),'focus',await p.evaluate(()=>NODES['v:'+focusVar()].en));
 await p.screenshot({path:'j6-saved.png'});
